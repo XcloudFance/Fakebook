@@ -16,10 +16,12 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
     @GetMapping("/hello")
-    public String hello(){
+    public String hello() {
         return "Hello";
     }
+
     //Currently assuming frontend sends back a form payload
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterForm registerForm) {
@@ -32,18 +34,16 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public User loginUser(@RequestParam(value = "uid") String uid,
-            @RequestParam(value = "username", required = false) String username,
-            @RequestParam(value = "email", required = false) String email,
+    public User loginUser(@RequestParam(value = "uidOrEmail") String uidOrEmail,
             @RequestParam("password") String password) {
-        //return a token
-        return userService.loginUser(uid, username, email, password);
+        //return User with token included
+        return userService.loginUser(uidOrEmail, password);
     }
 
     @PostMapping("/set_profile")
     public ResponseEntity<String> setUserProfile(@RequestParam("uid") String uid,
-            @RequestParam(value = "jobs", required = false) String token,
-            @RequestParam(value = "option", required = false) String option,
+            @RequestParam(value = "token") String token,
+            @RequestParam(value = "option") String option,
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "phone_number", required = false) String phone_number,
@@ -52,10 +52,12 @@ public class UserController {
             @RequestParam(value = "gender", required = false) String gender,
             @RequestParam(value = "hobbies", required = false) ArrayList<String> hobbies,
             @RequestParam(value = "jobs", required = false) ArrayList<String> jobs) {
+
         boolean setProfileSuccess = userService.setUserProfile(uid, token, option, username, email, phone_number, birthday, address, gender, hobbies, jobs);
-        if(setProfileSuccess)
+        if (setProfileSuccess) {
             return ResponseEntity.ok("User profile setup successful.");
-        else
+        } else {
             return ResponseEntity.badRequest().body("User profile setup failed.");
+        }
     }
 }

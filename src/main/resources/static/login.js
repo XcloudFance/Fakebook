@@ -9,7 +9,7 @@ window.onload = function () {
         password = password_edit.value;
 
         var request = new XMLHttpRequest();
-        request.open("get", "./api/user/login?uid=" + uname + "&password=" + password);
+        request.open("get", "./api/user/login?uidOrEmail=" + uname + "&password=" + password);
         request.send();
         request.onload = function () {
             if (request.status == 200) {

@@ -2,20 +2,17 @@ package dsgp6.fakebook.service;
 
 import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.repository.UserRepository;
-import dsgp6.fakebook.web.forms.LoginForm;
 import dsgp6.fakebook.web.forms.RegisterForm;
-import dsgp6.fakebook.web.forms.SetProfileForm;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
-//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.Random;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -43,11 +40,7 @@ public class UserService {
         User user = new User();
         user.setUid(registerForm.getUid());
         user.setUsername(registerForm.getUsername());
-
-        //Encode the password using BCrypt Encoder
-//        String encodedPassword = passwordEncoder.encode(registerForm.getPassword());
         user.setPassword(registerForm.getPassword());
-
         user.setEmail(registerForm.getEmail());
         user.setPhone_number(registerForm.getPhone_number());
 
@@ -55,29 +48,28 @@ public class UserService {
         return true;
     }
 
-    public User loginUser(String uid, String username, String email, String password) {
-        User user = null;
-        if (uid != null) {
-            user = userRepository.findByUid(uid);
-        } else if (username != null) {
-            user = userRepository.findByUsername(username);
-        } else if (email != null) {
-            user = userRepository.findByEmail(email);
-        }
-
+    public User loginUser(String uidOrEmail, String password) {
+        User user = userRepository.findByUidOrEmail(uidOrEmail, uidOrEmail);
+        //Checks if user exists
         if (user == null) {
             return null;
         }
-
-//        if (!passwordEncoder.matches(password, user.getPassword())) {
-//            return null;
-//        }
+        //Checks if password is correct
+        if (!password.equals(user.getPassword())) {
+            return null;
+        }
+        //Set a token to the user
+        user.setToken(generateToken());
+        userRepository.save(user);
         return user;
     }
 
     public boolean setUserProfile(String uid, String token, String option, String username, String email, String phone_number, String birthday, String address, String gender, ArrayList<String> hobbies, ArrayList<String> jobs) {
         User user = userRepository.findByUid(uid);
         if (user == null) {
+            return false;
+        }
+        if(!token.equals(user.getToken())){
             return false;
         }
         if (option.equals("username")) {
@@ -109,7 +101,7 @@ public class UserService {
         return true;
 
     }
-
+    //Calculate age of user based on birthday
     public int calcAge(LocalDate birthday) {
         LocalDate currentDate = LocalDate.now();
         Period period = Period.between(birthday, currentDate);
@@ -153,9 +145,19 @@ public class UserService {
         }
         return email.matches("[a-z0-9]+@[a-z]+\\.[a-z]{2,3}");
     }
-//    
-//    public String generateToken(){ }
-//    
+    
+    public String generateToken(){ 
+        int tokenLength = new Random().nextInt(5)+16;
+        String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuilder token = new StringBuilder();
+        Random r = new Random();
+        for (int i = 0; i < tokenLength; i++) {
+            int randomIndex = r.nextInt(characters.length());
+            token.append(characters.charAt(randomIndex));
+        }
+        return token.toString();
+    }
+    
 
 }
 //add generate token function 16-20 length 0-9 a-z A-Z, user add token field, login will save and return a token, set profile will accept a token field and verify the token with saved token
