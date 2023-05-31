@@ -1,23 +1,14 @@
-
 package dsgp6.fakebook.web.controller;
 
 import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.service.UserService;
-import dsgp6.fakebook.web.forms.LoginForm;
 import dsgp6.fakebook.web.forms.RegisterForm;
+import java.util.ArrayList;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-/**
- *
- * @author CZYu
- */
 @RestController
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -25,12 +16,11 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
     @GetMapping("/hello")
-    public String hello() {
-        return "hello world";
+    public String hello(){
+        return "Hello";
     }
-
+    //Currently assuming frontend sends back a form payload
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterForm registerForm) {
         boolean registrationSuccess = userService.registerUser(registerForm);
@@ -41,13 +31,31 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
-    public User loginUser(@RequestBody LoginForm loginForm) {
-        return userService.loginUser(loginForm);
+    @GetMapping("/login")
+    public User loginUser(@RequestParam(value = "uid") String uid,
+            @RequestParam(value = "username", required = false) String username,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam("password") String password) {
+        //return a token
+        return userService.loginUser(uid, username, email, password);
     }
-    
-    @PutMapping("/{username}/edit")
-    public ResponseEntity<String> editUser(){
-        return null;
+
+    @PostMapping("/set_profile")
+    public ResponseEntity<String> setUserProfile(@RequestParam("uid") String uid,
+            @RequestParam(value = "jobs", required = false) String token,
+            @RequestParam(value = "option", required = false) String option,
+            @RequestParam(value = "username", required = false) String username,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "phone_number", required = false) String phone_number,
+            @RequestParam(value = "birthday", required = false) String birthday,
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "gender", required = false) String gender,
+            @RequestParam(value = "hobbies", required = false) ArrayList<String> hobbies,
+            @RequestParam(value = "jobs", required = false) ArrayList<String> jobs) {
+        boolean setProfileSuccess = userService.setUserProfile(uid, token, option, username, email, phone_number, birthday, address, gender, hobbies, jobs);
+        if(setProfileSuccess)
+            return ResponseEntity.ok("User profile setup successful.");
+        else
+            return ResponseEntity.badRequest().body("User profile setup failed.");
     }
 }

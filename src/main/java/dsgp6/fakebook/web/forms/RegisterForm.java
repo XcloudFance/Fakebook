@@ -1,24 +1,31 @@
-
 package dsgp6.fakebook.web.forms;
+
 public class RegisterForm {
 
+    private String uid;
     private String username;
     private String password;
     private String email;
-    private String phone;
-    private String passwordCheck;
+    private String phone_number;
 
     // Constructors, getters, and setters
-
     public RegisterForm() {
     }
 
-    public RegisterForm(String username, String password, String email, String phone, String passwordCheck) {
+    public RegisterForm(String uid, String username, String password, String email, String phone_number) {
+        this.uid = uid;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.phone = phone;
-        this.passwordCheck = passwordCheck;
+        this.phone_number = phone_number;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getUsername() {
@@ -45,21 +52,14 @@ public class RegisterForm {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhone_number() {
+        return phone_number;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhone_number(String phone_number) {
+        this.phone_number = phone_number;
     }
 
-    public String getPasswordCheck() {
-        return passwordCheck;
-    }
-
-    public void setPasswordCheck(String passwordCheck) {
-        this.passwordCheck = passwordCheck;
-    }
-    
+  
 
 }

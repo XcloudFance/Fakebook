@@ -1,36 +1,55 @@
-
 package dsgp6.fakebook.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Queue;
 import org.springframework.data.annotation.*;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("user")
+@Document(collection = "user")
+@CompoundIndex(def = "{'uid': 1}", unique = true)
 public class User {
 
     @Id
     private String id;
-
+    
+    private String uid;
     private String username;
     private String password;
     private String email;
     private ArrayList<String> hobbies;
-    private String phone;
+    private String phone_number;
     private LocalDate birthday;
     private int age;
     private String address;
     private String gender;
     private int numberOfFriends;
-    private Queue<String> jobs;
+    private ArrayList<String> jobs;
+    private String token;
 
-    public String getPhone() {
-        return phone;
+    public String getToken() {
+        return token;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getPhone_number() {
+        return phone_number;
+    }
+
+    public void setPhone_number(String phone_number) {
+        this.phone_number = phone_number;
     }
 
     public String getId() {
@@ -73,8 +92,9 @@ public class User {
         return birthday;
     }
 
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
+    public void setBirthday(String birthday) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        this.birthday = LocalDate.parse(birthday, formatter);
     }
 
     public int getAge() {
@@ -109,11 +129,11 @@ public class User {
         this.numberOfFriends = numberOfFriends;
     }
 
-    public Queue<String> getJobs() {
+    public ArrayList<String> getJobs() {
         return jobs;
     }
 
-    public void setJobs(Queue<String> jobs) {
+    public void setJobs(ArrayList<String> jobs) {
         this.jobs = jobs;
     }
 
