@@ -4,6 +4,8 @@ import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.service.UserService;
 import dsgp6.fakebook.web.forms.RegisterForm;
 import java.util.ArrayList;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +17,6 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello";
     }
 
     //Currently assuming frontend sends back a form payload
@@ -34,12 +31,18 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public User loginUser(@RequestParam(value = "uidOrEmail") String uidOrEmail,
+    public ResponseEntity<String> loginUser(@RequestParam(value = "uidOrEmail") String uidOrEmail,
             @RequestParam("password") String password) {
-        //return User with token included
-        return userService.loginUser(uidOrEmail, password);
+        
+        User user = userService.loginUser(uidOrEmail, password);
+        
+        // Set the token as a cookie in the response
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, "token=" + user.getToken());
+        return new ResponseEntity<>("Login successful", headers, HttpStatus.OK);
+        
     }
-
+    
     @PostMapping("/set_profile")
     public ResponseEntity<String> setUserProfile(@RequestParam("uid") String uid,
             @RequestParam(value = "token") String token,
@@ -60,4 +63,11 @@ public class UserController {
             return ResponseEntity.badRequest().body("User profile setup failed.");
         }
     }
+    //Dummy method to test for authentication
+    @GetMapping("/dummy")
+    public String dummy(){
+        return "This is a dummy endpoint. It tests for authentication interceptor";
+    }
+    
+    
 }
