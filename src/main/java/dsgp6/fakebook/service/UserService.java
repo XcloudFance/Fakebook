@@ -147,7 +147,7 @@ public class UserService {
     }
     
     public String generateToken(){ 
-        int tokenLength = new Random().nextInt(5)+16;
+        int tokenLength = 15;
         String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         StringBuilder token = new StringBuilder();
         Random r = new Random();
@@ -158,6 +158,9 @@ public class UserService {
         return token.toString();
     }
     
+    public boolean validateToken(String token){
+        User user = userRepository.findByToken(token);
+        return user != null;
+    }
 
 }
-//add generate token function 16-20 length 0-9 a-z A-Z, user add token field, login will save and return a token, set profile will accept a token field and verify the token with saved token
