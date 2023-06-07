@@ -1,5 +1,6 @@
 package dsgp6.fakebook;
 
+import dsgp6.fakebook.model.PrivacySettings;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -34,5 +35,8 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setPrivacySettings(PrivacySettings privacySettings) {
     }
 }

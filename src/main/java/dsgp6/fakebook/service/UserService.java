@@ -157,6 +157,10 @@ public class UserService {
         }
         return token.toString();
     }
+
+    public User getUserByUid(String uid) {
+        return userRepository.findByUid(uid);
+    }
     
 
 }

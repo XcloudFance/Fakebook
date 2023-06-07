@@ -27,6 +27,11 @@ public class User {
     private int numberOfFriends;
     private ArrayList<String> jobs;
     private String token;
+    private PrivacySettings privacySettings;
+
+    public PrivacySettings getPrivacySettings() { return privacySettings; }
+
+    public void setPrivacySettings(PrivacySettings privacySettings) { this.privacySettings = privacySettings; }
 
     public String getToken() {
         return token;
