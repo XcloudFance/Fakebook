@@ -1,0 +1,20 @@
+package dsgp6.fakebook.service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Repository;
+import dsgp6.fakebook.repository.MessageRepository;
+
+@Repository
+public class MessageRepositoryImpl implements MessageRepository {
+    private final MongoTemplate mongoTemplate;
+
+    @Autowired
+    public MessageRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    @Override
+    public void saveMessage(Message message) {
+        mongoTemplate.save(message);
+    }
+}
