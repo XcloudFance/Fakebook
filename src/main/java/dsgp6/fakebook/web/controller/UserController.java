@@ -63,6 +63,17 @@ public class UserController {
             return ResponseEntity.badRequest().body("User profile setup failed.");
         }
     }
+
+    @GetMapping("/view")
+    public ResponseEntity<User> viewAccount(@RequestParam("uid") String uid) {
+        User user = userService.getUserByUid(uid);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     //Dummy method to test for authentication
     @GetMapping("/dummy")
     public String dummy(){
@@ -70,4 +81,5 @@ public class UserController {
     }
     
     
+
 }

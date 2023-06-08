@@ -27,6 +27,12 @@ public class User {
     private int numberOfFriends;
     private ArrayList<String> jobs;
     private String token;
+    private PrivacySettings privacySettings;
+
+    public PrivacySettings getPrivacySettings() { return privacySettings; }
+
+    public void setPrivacySettings(PrivacySettings privacySettings) { this.privacySettings = privacySettings; }
+
     private boolean online;
 
     public boolean isOnline() {
@@ -36,6 +42,7 @@ public class User {
     public void setOnline(boolean online) {
         this.online = online;
     }
+
 
     public String getToken() {
         return token;
