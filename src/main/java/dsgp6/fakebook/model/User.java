@@ -33,6 +33,17 @@ public class User {
 
     public void setPrivacySettings(PrivacySettings privacySettings) { this.privacySettings = privacySettings; }
 
+    private boolean online;
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+
     public String getToken() {
         return token;
     }
