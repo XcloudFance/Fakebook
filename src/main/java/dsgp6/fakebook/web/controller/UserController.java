@@ -1,4 +1,5 @@
 package dsgp6.fakebook.web.controller;
+import java.security.Principal;
 
 import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.service.UserService;
@@ -65,14 +66,31 @@ public class UserController {
     }
 
     @GetMapping("/view")
-    public ResponseEntity<User> viewAccount(@RequestParam("uid") String uid) {
-        User user = userService.getUserByUid(uid);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
+    public ResponseEntity<?> viewAccount(@RequestParam("uid") String uid, Principal principal) {
+        User loggedInUser = userService.getUserByUid(principal.getName());
+        User targetUser = userService.getUserByUid(uid);
+
+        if (targetUser == null) {
             return ResponseEntity.notFound().build();
         }
+
+        if (uid.equals(principal.getName())) {
+            // Viewing own account - Return all details
+            return ResponseEntity.ok(targetUser);
+
+        } else {
+            // Viewing other account - Return limited details
+            User limitedDetailsUser = new User();
+            limitedDetailsUser.setUsername(targetUser.getUsername());
+            limitedDetailsUser.setNumberOfFriends(targetUser.getNumberOfFriends());
+            limitedDetailsUser.setBirthday(String.valueOf(targetUser.getBirthday()));
+            limitedDetailsUser.setAge(targetUser.getAge());
+            limitedDetailsUser.setJobs(targetUser.getJobs());
+
+            return ResponseEntity.ok(limitedDetailsUser);
+        }
     }
+
 
     //Dummy method to test for authentication
     @GetMapping("/dummy")
