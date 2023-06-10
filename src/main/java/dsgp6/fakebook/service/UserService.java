@@ -179,7 +179,7 @@ public class UserService {
     }
 
 
-    public boolean validateToken(String token) {
+ 
 
     public User getUserByUid(String uid) {
         return userRepository.findByUid(uid);
