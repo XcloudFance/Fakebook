@@ -18,16 +18,25 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private ArrayList<String> hobbies;
+    private ArrayList<String> hobbies= new ArrayList<>();
     private String phone_number;
     private LocalDate birthday;
     private int age;
     private String address;
     private String gender;
     private int numberOfFriends;
-    private ArrayList<String> jobs;
+    private ArrayList<String> jobs=new ArrayList<>();
     private String token;
+    private ArrayList<String> friends= new ArrayList<>();
 
+    public ArrayList<String> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(String friend) {
+        friends.add(friend);
+    }
+    
     public String getToken() {
         return token;
     }
@@ -84,8 +93,8 @@ public class User {
         return hobbies;
     }
 
-    public void setHobbies(ArrayList<String> hobbies) {
-        this.hobbies = hobbies;
+    public void setHobbies(String hobbies) {
+        this.hobbies.add(hobbies);
     }
 
     public LocalDate getBirthday() {
@@ -133,8 +142,8 @@ public class User {
         return jobs;
     }
 
-    public void setJobs(ArrayList<String> jobs) {
-        this.jobs = jobs;
+    public void setJobs(String jobs) {
+        this.jobs.add(jobs);
     }
 
     public User() {

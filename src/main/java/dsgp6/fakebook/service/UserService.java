@@ -6,6 +6,7 @@ import dsgp6.fakebook.web.forms.RegisterForm;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import java.util.Random;
 
@@ -64,12 +65,12 @@ public class UserService {
         return user;
     }
 
-    public boolean setUserProfile(String uid, String token, String option, String username, String email, String phone_number, String birthday, String address, String gender, ArrayList<String> hobbies, ArrayList<String> jobs) {
+    public boolean setUserProfile(String uid, String option, String username, String email, String phone_number, String birthday, String address, String gender, String hobbies, String jobs, String friends, String requestToken) {
         User user = userRepository.findByUid(uid);
         if (user == null) {
             return false;
         }
-        if(!token.equals(user.getToken())){
+        if (!requestToken.equals(user.getToken())) {
             return false;
         }
         if (option.equals("username")) {
@@ -97,10 +98,29 @@ public class UserService {
         if (option.equals("email")) {
             user.setEmail(email);
         }
+        if (option.equals("friends")) {
+            user.setFriends(friends);
+        }
         userRepository.save(user);
         return true;
 
     }
+
+    public User searchFriend(String friendId, String token) {
+        User user = userRepository.findByToken(token);
+        User friend = null;
+        ArrayList<String> friends = user.getFriends();
+
+        for (String f : friends) {
+            if(f.equals(friendId)){
+                friend = userRepository.findByUid(f);
+                break;
+            }
+        }
+
+        return friend;
+    }
+
     //Calculate age of user based on birthday
     public int calcAge(LocalDate birthday) {
         LocalDate currentDate = LocalDate.now();
@@ -145,8 +165,8 @@ public class UserService {
         }
         return email.matches("[a-z0-9]+@[a-z]+\\.[a-z]{2,3}");
     }
-    
-    public String generateToken(){ 
+
+    public String generateToken() {
         int tokenLength = 15;
         String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         StringBuilder token = new StringBuilder();
@@ -157,8 +177,8 @@ public class UserService {
         }
         return token.toString();
     }
-    
-    public boolean validateToken(String token){
+
+    public boolean validateToken(String token) {
         User user = userRepository.findByToken(token);
         return user != null;
     }
