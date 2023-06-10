@@ -91,7 +91,7 @@ public class UserController {
             limitedDetailsUser.setNumberOfFriends(targetUser.getNumberOfFriends());
             limitedDetailsUser.setBirthday(String.valueOf(targetUser.getBirthday()));
             limitedDetailsUser.setAge(targetUser.getAge());
-            limitedDetailsUser.setJobs(targetUser.getJobs());
+            limitedDetailsUser.setJobs(String.valueOf(targetUser.getJobs()));
 
             return ResponseEntity.ok(limitedDetailsUser);
         }
