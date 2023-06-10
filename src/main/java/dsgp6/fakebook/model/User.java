@@ -27,7 +27,26 @@ public class User {
     private int numberOfFriends;
     private ArrayList<String> jobs=new ArrayList<>();
     private String token;
+
     private ArrayList<String> friends= new ArrayList<>();
+
+    private PrivacySettings privacySettings;
+
+    public PrivacySettings getPrivacySettings() { return privacySettings; }
+
+    public void setPrivacySettings(PrivacySettings privacySettings) { this.privacySettings = privacySettings; }
+
+    private boolean online;
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+
 
     public ArrayList<String> getFriends() {
         return friends;

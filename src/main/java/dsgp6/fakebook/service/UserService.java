@@ -178,7 +178,15 @@ public class UserService {
         return token.toString();
     }
 
+
     public boolean validateToken(String token) {
+
+    public User getUserByUid(String uid) {
+        return userRepository.findByUid(uid);
+    }
+    
+    public boolean validateToken(String token){
+
         User user = userRepository.findByToken(token);
         return user != null;
     }
