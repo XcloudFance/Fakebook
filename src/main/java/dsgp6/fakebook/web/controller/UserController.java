@@ -71,7 +71,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/view")
+    @GetMapping("/get_profile")
     public ResponseEntity<?> viewAccount(@RequestParam("uid") String uid, Principal principal) {
         User loggedInUser = userService.getUserByUid(principal.getName());
         User targetUser = userService.getUserByUid(uid);
@@ -80,20 +80,41 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        if (uid.equals(principal.getName())) {
+        if (targetUser.getUid().equals(loggedInUser.getUid())) {
             // Viewing own account - Return all details
             return ResponseEntity.ok(targetUser);
+        }
 
-        } else {
-            // Viewing other account - Return limited details
+        if (loggedInUser.getFriends().contains(targetUser.getUid())) {
+            // Viewing 1st-degree connection - Return all details
+            return ResponseEntity.ok(targetUser);
+        } else if (loggedInUser.getFriends().stream().anyMatch(friendUid -> {
+            User friend = userService.getUserByUid(friendUid);
+            return friend != null && friend.getFriends().contains(targetUser.getUid());
+        })) {
+            // Viewing 2nd-degree connection - Return limited details
             User limitedDetailsUser = new User();
             limitedDetailsUser.setUsername(targetUser.getUsername());
-            limitedDetailsUser.setNumberOfFriends(targetUser.getNumberOfFriends());
-            limitedDetailsUser.setBirthday(String.valueOf(targetUser.getBirthday()));
+            limitedDetailsUser.setGender(targetUser.getGender());
+            limitedDetailsUser.setBirthday(targetUser.getBirthday().toString());
             limitedDetailsUser.setAge(targetUser.getAge());
-            limitedDetailsUser.setJobs(String.valueOf(targetUser.getJobs()));
+            limitedDetailsUser.setNumberOfFriends(targetUser.getNumberOfFriends());
+            limitedDetailsUser.setJobs(String.valueOf(new ArrayList<>(targetUser.getJobs())));
+            limitedDetailsUser.setPhone_number(targetUser.getPhone_number());
+            limitedDetailsUser.setEmail(targetUser.getEmail());
 
             return ResponseEntity.ok(limitedDetailsUser);
+        } else {
+            // Viewing 3rd-degree connection - Return further limited details
+            User furtherLimitedDetailsUser = new User();
+            furtherLimitedDetailsUser.setUsername(targetUser.getUsername());
+            furtherLimitedDetailsUser.setGender(targetUser.getGender());
+            furtherLimitedDetailsUser.setBirthday(targetUser.getBirthday().toString());
+            furtherLimitedDetailsUser.setAge(targetUser.getAge());
+            furtherLimitedDetailsUser.setNumberOfFriends(targetUser.getNumberOfFriends());
+            furtherLimitedDetailsUser.setJobs(String.valueOf(new ArrayList<>(targetUser.getJobs())));
+
+            return ResponseEntity.ok(furtherLimitedDetailsUser);
         }
     }
 
@@ -103,16 +124,19 @@ public class UserController {
     public String dummy() {
         return "This is a dummy endpoint. ";
     }
+
     @PostMapping("/getCookieValue")
     public String getCookieValue(@RequestParam("uid") String uid,
             @RequestParam("username") String username,
             @CookieValue(name = "token") String token){
         return "This token in cookie is: "+token+uid+username;
     }
+
     @PostMapping("/hello")
     public String hello(){
         return "hello";
     }
+
     @GetMapping("/search/friend")
     public ResponseEntity<User> searchFriend(@RequestParam("friend") String friendId,
             @CookieValue(name = "token") String token) {
@@ -124,8 +148,5 @@ public class UserController {
             return ResponseEntity.ok(searchResult);
         }
     }
-
-    
-    
 
 }
