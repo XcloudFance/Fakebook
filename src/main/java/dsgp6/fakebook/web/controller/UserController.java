@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,7 +17,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final FriendService friendService;
+    private FriendService friendService;
 
     public UserController(UserService userService, FriendService friendService) {
         this.userService = userService;
@@ -110,14 +111,8 @@ public class UserController {
     @GetMapping("/{userUid}/add_friend")
     public ResponseEntity<?> addFriend(@PathVariable("userUid") String userUid, @RequestParam("friend_uid") String friendUid) {
         boolean addFriendSuccess = friendService.addFriend(userUid, friendUid);
-        if (addFriendSuccess) {return ResponseEntity.ok("Friend request sent.");}
-        else {return ResponseEntity.badRequest().body("Failed to send friend request.");}
-    }
-    @GetMapping("/{userUid}/accept_request")
-    public ResponseEntity<?> acceptRequest(@PathVariable("userUid") String userUid, @RequestParam("friend_uid") String friendUid) {
-        boolean acceptRequestSuccess = friendService.acceptRequest(userUid, friendUid);
-        if (acceptRequestSuccess) {return ResponseEntity.ok("Added to friends.");}
-        else {return ResponseEntity.badRequest().body("Failed to accept friend request.");}
+        if (addFriendSuccess) {return ResponseEntity.ok("Friend added successfully.");}
+        else {return ResponseEntity.badRequest().body("Failed to add friend.");}
     }
     @GetMapping("/{userUid}/remove_friend")
     public ResponseEntity<?> removeFriend(@PathVariable("userUid") String userUid, @RequestParam("friend_uid") String friendUid) {
