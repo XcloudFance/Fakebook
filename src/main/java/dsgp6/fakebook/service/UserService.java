@@ -163,7 +163,7 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             return false;
         }
-        return email.matches("[a-z0-9]+@[a-z]+\\.[a-z]{2,3}");
+        return email.matches("[a-z0-9A-Z.]+@[a-z]+\\.[a-z]{2,3}");
     }
 
     public String generateToken() {
@@ -175,7 +175,11 @@ public class UserService {
             int randomIndex = r.nextInt(characters.length());
             token.append(characters.charAt(randomIndex));
         }
-        return token.toString();
+        String tokenString = token.toString();
+        if(userRepository.existsByToken(tokenString)){
+            generateToken();
+        }
+        return tokenString;
     }
 
 
