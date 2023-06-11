@@ -4,6 +4,8 @@ import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class FriendService {
@@ -58,5 +60,24 @@ public class FriendService {
             }
             return list;
         } else {return null;}
+    }
+    public List<String> findMutualFriends(String user1id, String user2id) {
+        User user1 = userRepository.findByUid(user1id);
+        User user2 = userRepository.findByUid(user2id);
+
+        List<String> mutualFriends = new ArrayList<>();
+
+        if (user1 != null && user2 != null) {
+            List<String> friendList1 = user1.getFriends();
+            List<String> friendList2 = user2.getFriends();
+            List<String> temp;
+            friendList1.retainAll(friendList2);
+
+            for(int i=0; i<friendList1.size(); i++){
+                User user = userRepository.findByUid(friendList1.get(i));
+                mutualFriends.add(user.getUsername());
+            }
+        }
+        return mutualFriends;
     }
 }

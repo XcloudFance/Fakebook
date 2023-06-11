@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -125,6 +126,15 @@ public class UserController {
     @GetMapping("/get_friendlist")
     public String[] getFriendList (@RequestParam("user_uid") String userUid) {
         return friendService.getFriendList(userUid);
+    }
+    @GetMapping("/{user1id}/mutual_friends/{user2id}")
+    public ResponseEntity<?> findMutualFriends(@PathVariable("user1id") String user1id, @PathVariable("user2id") String user2id) {
+        List<String> mutualFriends = friendService.findMutualFriends(user1id, user2id);
+        if (mutualFriends.isEmpty()) {
+            return ResponseEntity.ok("No mutual friends found.");
+        } else {
+            return ResponseEntity.ok(mutualFriends);
+        }
     }
 
 }
