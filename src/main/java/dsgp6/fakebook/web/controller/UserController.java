@@ -1,26 +1,23 @@
 package dsgp6.fakebook.web.controller;
 
 import dsgp6.fakebook.model.User;
-import dsgp6.fakebook.service.FriendService;
 import dsgp6.fakebook.service.UserService;
 import dsgp6.fakebook.web.forms.RegisterForm;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
-    private FriendService friendService;
 
-    public UserController(UserService userService, FriendService friendService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.friendService = friendService;
     }
 
     //Currently assuming frontend sends back a form payload
@@ -110,23 +107,8 @@ public class UserController {
             return ResponseEntity.ok(searchResult);
         }
     }
-    //friend-related endpoint
-    @GetMapping("/{userUid}/add_friend")
-    public ResponseEntity<?> addFriend(@PathVariable("userUid") String userUid, @RequestParam("friend_uid") String friendUid) {
-        boolean addFriendSuccess = friendService.addFriend(userUid, friendUid);
-        if (addFriendSuccess) {return ResponseEntity.ok("Friend added successfully.");}
-        else {return ResponseEntity.badRequest().body("Failed to add friend.");}
-    }
-    @GetMapping("/{userUid}/remove_friend")
-    public ResponseEntity<?> removeFriend(@PathVariable("userUid") String userUid, @RequestParam("friend_uid") String friendUid) {
-        boolean removeFriendSuccess = friendService.removeFriend(userUid, friendUid);
-        if (removeFriendSuccess) {return ResponseEntity.ok("Friend removed successfully.");}
-        else {return ResponseEntity.badRequest().body("Failed to remove friend.");}
-    }
-    @GetMapping("/get_friendlist")
-    public String[] getFriendList (@RequestParam("user_uid") String userUid) {
-        return friendService.getFriendList(userUid);
-    }
 
+    
+    
 
 }
