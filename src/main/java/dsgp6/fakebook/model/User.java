@@ -30,11 +30,6 @@ public class User {
 
     private ArrayList<String> friends= new ArrayList<>();
 
-    private PrivacySettings privacySettings;
-
-    public PrivacySettings getPrivacySettings() { return privacySettings; }
-
-    public void setPrivacySettings(PrivacySettings privacySettings) { this.privacySettings = privacySettings; }
 
     private boolean online;
 
