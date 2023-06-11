@@ -1,11 +1,8 @@
 package dsgp6.fakebook.web.controller;
-import java.security.Principal;
 
 import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.service.UserService;
 import dsgp6.fakebook.web.forms.RegisterForm;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,51 +69,10 @@ public class UserController {
 
 
     @GetMapping("/get_profile")
-    public ResponseEntity<?> viewAccount(@RequestParam("uid") String uid, Principal principal) {
-        User loggedInUser = userService.getUserByUid(principal.getName());
-        User targetUser = userService.getUserByUid(uid);
-
-        if (targetUser == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        if (targetUser.getUid().equals(loggedInUser.getUid())) {
-            // Viewing own account - Return all details
-            return ResponseEntity.ok(targetUser);
-        }
-
-        if (loggedInUser.getFriends().contains(targetUser.getUid())) {
-            // Viewing 1st-degree connection - Return all details
-            return ResponseEntity.ok(targetUser);
-        } else if (loggedInUser.getFriends().stream().anyMatch(friendUid -> {
-            User friend = userService.getUserByUid(friendUid);
-            return friend != null && friend.getFriends().contains(targetUser.getUid());
-        })) {
-            // Viewing 2nd-degree connection - Return limited details
-            User limitedDetailsUser = new User();
-            limitedDetailsUser.setUsername(targetUser.getUsername());
-            limitedDetailsUser.setGender(targetUser.getGender());
-            limitedDetailsUser.setBirthday(targetUser.getBirthday().toString());
-            limitedDetailsUser.setAge(targetUser.getAge());
-            limitedDetailsUser.setNumberOfFriends(targetUser.getNumberOfFriends());
-            limitedDetailsUser.setJobs(String.valueOf(new ArrayList<>(targetUser.getJobs())));
-            limitedDetailsUser.setPhone_number(targetUser.getPhone_number());
-            limitedDetailsUser.setEmail(targetUser.getEmail());
-
-            return ResponseEntity.ok(limitedDetailsUser);
-        } else {
-            // Viewing 3rd-degree connection - Return further limited details
-            User furtherLimitedDetailsUser = new User();
-            furtherLimitedDetailsUser.setUsername(targetUser.getUsername());
-            furtherLimitedDetailsUser.setGender(targetUser.getGender());
-            furtherLimitedDetailsUser.setBirthday(targetUser.getBirthday().toString());
-            furtherLimitedDetailsUser.setAge(targetUser.getAge());
-            furtherLimitedDetailsUser.setNumberOfFriends(targetUser.getNumberOfFriends());
-            furtherLimitedDetailsUser.setJobs(String.valueOf(new ArrayList<>(targetUser.getJobs())));
-
-            return ResponseEntity.ok(furtherLimitedDetailsUser);
-        }
+    public ResponseEntity<?> viewAccount(@RequestParam("uid") String uid, @CookieValue(name = "token") String token) {
+        return userService.viewAccount(uid, token);
     }
+
 
 
     //Dummy method to test for authentication

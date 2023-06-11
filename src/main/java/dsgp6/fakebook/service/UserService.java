@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.Random;
 
@@ -163,7 +165,7 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             return false;
         }
-        return email.matches("[a-z0-9]+@[a-z]+\\.[a-z]{2,3}");
+        return email.matches("[a-z0-9A-Z.]+@[a-z]+\\.[a-z]{2,3}");
     }
 
     public String generateToken() {
@@ -174,6 +176,10 @@ public class UserService {
         for (int i = 0; i < tokenLength; i++) {
             int randomIndex = r.nextInt(characters.length());
             token.append(characters.charAt(randomIndex));
+        }
+        String tokenString = token.toString();
+        if(userRepository.existsByToken(tokenString)){
+            generateToken();
         }
         return token.toString();
     }
@@ -186,6 +192,53 @@ public class UserService {
     public boolean validateToken(String token){
         User user = userRepository.findByToken(token);
         return user != null;
+    }
+
+    public ResponseEntity<?> viewAccount(String uid, String token) {
+        User loggedInUser = userRepository.findByToken(token);
+        User targetUser = getUserByUid(uid);
+
+        if (targetUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (targetUser.getUid().equals(loggedInUser.getUid())) {
+            // Viewing own account - Return all details
+            return ResponseEntity.ok(targetUser);
+        }
+
+        if (loggedInUser.getFriends().contains(targetUser.getUid())) {
+            // Viewing 1st-degree connection - Return all details
+            return ResponseEntity.ok(targetUser);
+        } else if (loggedInUser.getFriends().stream().anyMatch(friendUid -> {
+            User friend = getUserByUid(friendUid);
+            return friend != null && friend.getFriends().contains(targetUser.getUid());
+        })) {
+            // Viewing 2nd-degree connection - Return limited details
+            User limitedDetailsUser = new User();
+            limitedDetailsUser.setUsername(targetUser.getUsername());
+            limitedDetailsUser.setGender(targetUser.getGender());
+            limitedDetailsUser.setBirthday(targetUser.getBirthday().toString());
+            limitedDetailsUser.setAge(targetUser.getAge());
+            limitedDetailsUser.setNumberOfFriends(targetUser.getNumberOfFriends());
+            limitedDetailsUser.setJobs(String.valueOf(new ArrayList<>(targetUser.getJobs())));
+            limitedDetailsUser.setPhone_number(targetUser.getPhone_number());
+            limitedDetailsUser.setEmail(targetUser.getEmail());
+
+            return ResponseEntity.ok(limitedDetailsUser);
+
+        } else {
+            // Viewing 3rd-degree connection - Return further limited details
+            User furtherLimitedDetailsUser = new User();
+            furtherLimitedDetailsUser.setUsername(targetUser.getUsername());
+            furtherLimitedDetailsUser.setGender(targetUser.getGender());
+            furtherLimitedDetailsUser.setBirthday(targetUser.getBirthday().toString());
+            furtherLimitedDetailsUser.setAge(targetUser.getAge());
+            furtherLimitedDetailsUser.setNumberOfFriends(targetUser.getNumberOfFriends());
+            furtherLimitedDetailsUser.setJobs(String.valueOf(new ArrayList<>(targetUser.getJobs())));
+
+            return ResponseEntity.ok(furtherLimitedDetailsUser);
+        }
     }
 
 }
