@@ -3,6 +3,10 @@ package dsgp6.fakebook.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,7 +17,7 @@ public class User {
 
     @Id
     private String id;
-    
+
     private String uid;
     private String username;
     private String password;
@@ -27,11 +31,12 @@ public class User {
     private int numberOfFriends;
     private ArrayList<String> jobs=new ArrayList<>();
     private String token;
-
     private ArrayList<String> friends= new ArrayList<>();
 
 
     private boolean online;
+    private List<String> PendingSentRequest = new LinkedList<>();
+    private List<String> PendingReceivedRequest = new LinkedList<>();
 
     public boolean isOnline() {
         return online;
@@ -41,8 +46,6 @@ public class User {
         this.online = online;
     }
 
-
-
     public ArrayList<String> getFriends() {
         return friends;
     }
@@ -51,7 +54,7 @@ public class User {
         friends.add(friend);
         numberOfFriends++;
     }
-    
+
     public String getToken() {
         return token;
     }
@@ -162,5 +165,21 @@ public class User {
     }
 
     public User() {
+    }
+
+    public List<String> getPendingSentRequest() {
+        return PendingSentRequest;
+    }
+
+    public void setPendingSentRequest(List<String> pendingSentRequest) {
+        PendingSentRequest = pendingSentRequest;
+    }
+
+    public List<String> getPendingReceivedRequest() {
+        return PendingReceivedRequest;
+    }
+
+    public void setPendingReceivedRequest(List<String> pendingReceivedRequest) {
+        PendingReceivedRequest = pendingReceivedRequest;
     }
 }
