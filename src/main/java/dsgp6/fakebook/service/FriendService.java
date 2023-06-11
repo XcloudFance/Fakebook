@@ -5,54 +5,23 @@ import dsgp6.fakebook.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 @Service
 public class FriendService {
     private final UserRepository userRepository;
-    Queue <String> pendingSentRequest;
-    Queue <String> pendingReceivedRequest;
 
     @Autowired
-    public FriendService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-        pendingReceivedRequest = new LinkedList<>();
-        pendingSentRequest = new LinkedList<>();
-    }
+    public FriendService(UserRepository userRepository) {this.userRepository = userRepository;}
 
     public boolean addFriend (String userUID, String friendUID) {
         //find the users
         User sender = userRepository.findByUid(userUID);
         User receiver = userRepository.findByUid(friendUID);
-        if (sender == null || receiver == null) {return false;}
-
-        //check if friend is already in friend list
-        if (sender.getFriends().contains(receiver.getUid())){return false;}
-
-        //add requests to queue
-        pendingSentRequest.offer(friendUID);
-        pendingReceivedRequest.offer(userUID);
-
-        userRepository.save(receiver);
-        userRepository.save(sender);
-        return true;
-    }
-    public boolean acceptRequest (String userUID, String friendUID) {
-        //find the users
-        User sender = userRepository.findByUid(userUID);
-        User receiver = userRepository.findByUid(friendUID);
-        if (sender == null || receiver == null) {return false;}
-        //check if friend is already in friend list
-        if (sender.getFriends().contains(receiver.getUid())){return false;}
+        if (sender == null || receiver == null) {;return false;}
         //add to friend list
         receiver.getFriends().add(sender.getUid());
         sender.getFriends().add(receiver.getUid());
-
-        pendingReceivedRequest.remove(sender.getUid());
-        pendingSentRequest.remove(receiver.getUid());
-
         //update number of friends
         sender.setNumberOfFriends(sender.getNumberOfFriends()+1);
         receiver.setNumberOfFriends(receiver.getNumberOfFriends()+1);
@@ -101,6 +70,7 @@ public class FriendService {
         if (user1 != null && user2 != null) {
             List<String> friendList1 = user1.getFriends();
             List<String> friendList2 = user2.getFriends();
+            List<String> temp;
             friendList1.retainAll(friendList2);
 
             for(int i=0; i<friendList1.size(); i++){
@@ -109,13 +79,5 @@ public class FriendService {
             }
         }
         return mutualFriends;
-    }
-
-    public Queue<String> getPendingSentRequest() {
-        return pendingSentRequest;
-    }
-
-    public Queue<String> getPendingReceivedRequest() {
-        return pendingReceivedRequest;
     }
 }
