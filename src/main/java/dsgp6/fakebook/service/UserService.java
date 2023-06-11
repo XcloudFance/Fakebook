@@ -181,6 +181,7 @@ public class UserService {
         if(userRepository.existsByToken(tokenString)){
             generateToken();
         }
+
         return token.toString();
     }
 

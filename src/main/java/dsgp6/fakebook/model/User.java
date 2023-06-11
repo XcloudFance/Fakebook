@@ -47,6 +47,7 @@ public class User {
 
     public void setFriends(String friend) {
         friends.add(friend);
+        numberOfFriends++;
     }
     
     public String getToken() {
@@ -105,8 +106,8 @@ public class User {
         return hobbies;
     }
 
-    public void setHobbies(String hobbies) {
-        this.hobbies.add(hobbies);
+    public void setHobbies(String hobby) {
+        hobbies.add(hobby);
     }
 
     public LocalDate getBirthday() {
@@ -154,8 +155,8 @@ public class User {
         return jobs;
     }
 
-    public void setJobs(String jobs) {
-        this.jobs.add(jobs);
+    public void setJobs(String job) {
+        jobs.add(job);
     }
 
     public User() {
