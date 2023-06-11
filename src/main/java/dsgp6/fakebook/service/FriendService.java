@@ -28,7 +28,7 @@ public class FriendService {
         if (sender.getFriends().contains(receiver.getUid())){return false;}
 
         //add requests to queue
-        if (!sender.getPendingSentRequest().contains(friendUID) && !receiver.getPendingReceivedRequest().contains(userUID)) {
+        if (!sender.getPendingSentRequest().contains(friendUID) || !receiver.getPendingReceivedRequest().contains(userUID)) {
             sender.getPendingSentRequest().add(friendUID);
             receiver.getPendingReceivedRequest().add(userUID);
         }
@@ -114,6 +114,7 @@ public class FriendService {
     public List<String> getPendingSentRequest(String userUID) {
         User user = userRepository.findByUid(userUID);
         if (user != null) {
+            System.out.println("show sent req");
             return user.getPendingSentRequest();
         } else {
             return null;
@@ -123,6 +124,7 @@ public class FriendService {
     public List<String> getPendingReceivedRequest(String userUID) {
         User user = userRepository.findByUid(userUID);
         if (user != null) {
+            System.out.println("show received req");
             return user.getPendingReceivedRequest();
         } else {
             return null;
@@ -134,9 +136,9 @@ public class FriendService {
         if (user == null) {return false;}
         int i = 0;
         while (!user.getPendingSentRequest().isEmpty()) {
-            String removed = user.getPendingReceivedRequest().remove(i++);
+            String removed = user.getPendingSentRequest().remove(i++);
             User user2 = userRepository.findByUid(removed);
-            clearReceivedRequests(removed);
+            user2.getPendingReceivedRequest().remove(userUID);
             userRepository.save(user2);
         }
         userRepository.save(user);
@@ -147,9 +149,9 @@ public class FriendService {
         if (user == null) {return false;}
         int i=0;
         while (!user.getPendingReceivedRequest().isEmpty()) {
-            String removed = user.getPendingSentRequest().remove(i++);
+            String removed = user.getPendingReceivedRequest().remove(i++);
             User user2 = userRepository.findByUid(removed);
-            clearSentRequests(removed);
+            user2.getPendingSentRequest().remove(userUID);
             userRepository.save(user2);
         }
         userRepository.save(user);
