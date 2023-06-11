@@ -1,7 +1,6 @@
 package dsgp6.fakebook;
 
 import org.springframework.stereotype.Service;
-import dsgp6.fakebook.model.PrivacySettings;
 
 @Service
 public class UserService {

@@ -1,6 +1,5 @@
 package dsgp6.fakebook;
 
-import dsgp6.fakebook.model.PrivacySettings;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

@@ -73,14 +73,10 @@ public class UserController {
     }
 
 
-    @GetMapping("/view")
-    public ResponseEntity<User> viewAccount(@RequestParam("uid") String uid) {
-        User user = userService.getUserByUid(uid);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    //View-account endpoint
+    @GetMapping("/get_profile")
+    public ResponseEntity<?> viewAccount(@RequestParam("uid") String uid, @CookieValue(name = "token") String token) {
+        return userService.viewAccount(uid, token);
     }
 
 
