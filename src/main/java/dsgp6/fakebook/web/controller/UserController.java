@@ -70,15 +70,11 @@ public class UserController {
     }
 
 
-    @GetMapping("/view")
-    public ResponseEntity<User> viewAccount(@RequestParam("uid") String uid) {
-        User user = userService.getUserByUid(uid);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/get_profile")
+    public ResponseEntity<?> viewAccount(@RequestParam("uid") String uid, @CookieValue(name = "token") String token) {
+        return userService.viewAccount(uid, token);
     }
+
 
 
     //Dummy method to test for authentication
@@ -86,16 +82,19 @@ public class UserController {
     public String dummy() {
         return "This is a dummy endpoint. ";
     }
+
     @PostMapping("/getCookieValue")
     public String getCookieValue(@RequestParam("uid") String uid,
             @RequestParam("username") String username,
             @CookieValue(name = "token") String token){
         return "This token in cookie is: "+token+uid+username;
     }
+
     @PostMapping("/hello")
     public String hello(){
         return "hello";
     }
+
     @GetMapping("/search/friend")
     public ResponseEntity<User> searchFriend(@RequestParam("friend") String friendId,
             @CookieValue(name = "token") String token) {
@@ -107,8 +106,5 @@ public class UserController {
             return ResponseEntity.ok(searchResult);
         }
     }
-
-    
-    
 
 }
