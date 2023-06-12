@@ -28,28 +28,40 @@ public class FriendService {
         if (sender.getFriends().contains(receiver.getUid())){return false;}
 
         //add requests to queue
-        if (!sender.getPendingSentRequest().contains(friendUID) || !receiver.getPendingReceivedRequest().contains(userUID)) {
-            sender.getPendingSentRequest().add(friendUID);
-            receiver.getPendingReceivedRequest().add(userUID);
-        }
+        if (!sender.getPendingSentRequest().contains(receiver.getUsername())){
+            sender.getPendingSentRequest().add(receiver.getUsername());}
+
+        if (!receiver.getPendingReceivedRequest().contains(sender.getUsername())) {
+            receiver.getPendingReceivedRequest().add(sender.getUsername());}
+
         userRepository.save(receiver);
         userRepository.save(sender);
         return true;
     }
     public boolean acceptRequest (String userUID, String friendUID) {
         //find the users
-        User sender = userRepository.findByUid(userUID);
-        User receiver = userRepository.findByUid(friendUID);
+        User sender = userRepository.findByUid(friendUID);
+        User receiver = userRepository.findByUid(userUID);
         if (sender == null || receiver == null) {return false;}
         //check if friend is already in friend list
-        if (sender.getFriends().contains(receiver.getUid())){return false;}
+        if (receiver.getFriends().contains(sender.getUid())){return false;}
         //add to friend list
         receiver.getFriends().add(sender.getUid());
         sender.getFriends().add(receiver.getUid());
 
-        if (sender.getPendingSentRequest().contains(friendUID)) {
-            receiver.getPendingReceivedRequest().remove(sender.getUid());
-            sender.getPendingSentRequest().remove(receiver.getUid());
+        System.out.println("sender username: "+sender.getUsername());
+        System.out.println("receiver username: "+receiver.getUsername());
+
+        if (sender.getPendingSentRequest().contains(receiver.getUsername())){
+            System.out.println("username found in sent box");
+            sender.getPendingSentRequest().remove(receiver.getUsername());}else{
+            System.out.println(sender.getPendingSentRequest());
+        }
+
+        if (receiver.getPendingReceivedRequest().contains(sender.getUsername())) {
+            System.out.println("username found in recevied box");
+            receiver.getPendingReceivedRequest().remove(sender.getUsername());}else{
+            receiver.getPendingReceivedRequest();
         }
 
 
@@ -137,8 +149,8 @@ public class FriendService {
         int i = 0;
         while (!user.getPendingSentRequest().isEmpty()) {
             String removed = user.getPendingSentRequest().remove(i++);
-            User user2 = userRepository.findByUid(removed);
-            user2.getPendingReceivedRequest().remove(userUID);
+            User user2 = userRepository.findByUsername(removed);
+            user2.getPendingReceivedRequest().remove(user.getUsername());
             userRepository.save(user2);
         }
         userRepository.save(user);
@@ -150,8 +162,8 @@ public class FriendService {
         int i=0;
         while (!user.getPendingReceivedRequest().isEmpty()) {
             String removed = user.getPendingReceivedRequest().remove(i++);
-            User user2 = userRepository.findByUid(removed);
-            user2.getPendingSentRequest().remove(userUID);
+            User user2 = userRepository.findByUsername(removed);
+            user2.getPendingSentRequest().remove(user.getUsername());
             userRepository.save(user2);
         }
         userRepository.save(user);
