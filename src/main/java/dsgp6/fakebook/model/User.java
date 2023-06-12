@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,27 +16,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
 
     @Id
-    protected String id;
+    private String id;
 
     private String uid;
     private String username;
-    protected String password;
-    protected String email;
+    private String password;
+    private String email;
     private ArrayList<String> hobbies= new ArrayList<>();
-    protected String phone_number;
+    private String phone_number;
     private LocalDate birthday;
     private int age;
-    protected String address;
+    private String address;
     private String gender;
     private int numberOfFriends;
     private ArrayList<String> jobs=new ArrayList<>();
-    protected String token;
+    private String token;
     private ArrayList<String> friends= new ArrayList<>();
 
 
     private boolean online;
-    protected List<String> PendingSentRequest = new LinkedList<>();
-    protected List<String> PendingReceivedRequest = new LinkedList<>();
+    private List<String> PendingSentRequest = new LinkedList<>();
+    private List<String> PendingReceivedRequest = new LinkedList<>();
 
     public boolean isOnline() {
         return online;
@@ -183,37 +182,4 @@ public class User {
     public void setPendingReceivedRequest(List<String> pendingReceivedRequest) {
         PendingReceivedRequest = pendingReceivedRequest;
     }
-    public ViewUser hideSensitiveInformation() {
-        ViewUser limitedDetailsUser = new ViewUser();
-        limitedDetailsUser.setUid(this.getUid());
-        limitedDetailsUser.setUsername(this.getUsername());
-        limitedDetailsUser.setGender(this.getGender());
-        limitedDetailsUser.setBirthday(this.getBirthday().toString());
-        limitedDetailsUser.setAge(this.getAge());
-        limitedDetailsUser.setNumberOfFriends(this.getNumberOfFriends());
-        limitedDetailsUser.setJobs(String.valueOf(this.getJobs()));
-        limitedDetailsUser.setFriends(String.valueOf(this.getFriends()));
-        limitedDetailsUser.setHobbies(String.valueOf(this.getHobbies()));
-        return limitedDetailsUser;
-    }
-
-
-
-
-    public User OwnInformation() {
-        User limitedDetailsUser = new User();
-        limitedDetailsUser.setUsername(this.getUsername());
-        limitedDetailsUser.setGender(this.getGender());
-        limitedDetailsUser.setBirthday(this.getBirthday().toString());
-        limitedDetailsUser.setAge(this.getAge());
-        limitedDetailsUser.setNumberOfFriends(this.getNumberOfFriends());
-        limitedDetailsUser.setJobs(String.valueOf(this.getJobs()));
-        limitedDetailsUser.setFriends(String.valueOf(this.getFriends()));
-        limitedDetailsUser.setHobbies(String.valueOf(this.getHobbies()));
-        limitedDetailsUser.setPhone_number(this.getPhone_number());
-        limitedDetailsUser.setEmail(this.getEmail());
-        limitedDetailsUser.setAddress(this.getAddress());
-        return limitedDetailsUser;
-    }
-
 }
