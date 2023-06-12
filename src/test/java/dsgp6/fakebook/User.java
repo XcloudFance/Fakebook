@@ -36,6 +36,6 @@ public class User {
         this.password = password;
     }
 
-    public void setPrivacySettings(PrivacySettings privacySettings) {
-    }
+    // public void setPrivacySettings(PrivacySettings privacySettings) {
+    // }
 }

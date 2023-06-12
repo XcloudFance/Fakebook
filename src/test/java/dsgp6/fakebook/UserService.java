@@ -26,14 +26,14 @@ public class UserService {
         return user;
     }
 
-    public User updatePrivacySettings(String uid, PrivacySettings privacySettings) {
-        User user = userRepository.findByUid(uid);
-        if (user != null) {
-            user.setPrivacySettings(privacySettings);
-            return userRepository.save(user);
-        }
-        throw new RuntimeException("User not found");
-    }
+    // public User updatePrivacySettings(String uid, PrivacySettings privacySettings) {
+    //     User user = userRepository.findByUid(uid);
+    //     if (user != null) {
+    //         user.setPrivacySettings(privacySettings);
+    //         return userRepository.save(user);
+    //     }
+    //     throw new RuntimeException("User not found");
+    // }
 
     public User getUserByUid(String uid) { return userRepository.findByUid(uid); }
 }
