@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,17 +21,17 @@ public class User {
 
     private String uid;
     private String username;
-    private String password;
-    private String email;
+    protected String password;
+    protected String email;
     private ArrayList<String> hobbies= new ArrayList<>();
-    private String phone_number;
+    protected String phone_number;
     private LocalDate birthday;
     private int age;
-    private String address;
+    protected String address;
     private String gender;
     private int numberOfFriends;
     private ArrayList<String> jobs=new ArrayList<>();
-    private String token;
+    protected String token;
     private ArrayList<String> friends= new ArrayList<>();
 
 
@@ -182,4 +183,19 @@ public class User {
     public void setPendingReceivedRequest(List<String> pendingReceivedRequest) {
         PendingReceivedRequest = pendingReceivedRequest;
     }
+
+    public ViewUser hideSensitiveInformation() {
+        ViewUser limitedDetailsUser = new ViewUser();
+        limitedDetailsUser.setUid(this.getUid());
+        limitedDetailsUser.setUsername(this.getUsername());
+        limitedDetailsUser.setGender(this.getGender());
+        limitedDetailsUser.setBirthday(this.getBirthday().toString());
+        limitedDetailsUser.setAge(this.getAge());
+        limitedDetailsUser.setNumberOfFriends(this.getNumberOfFriends());
+        limitedDetailsUser.setJobs(String.valueOf(this.getJobs()));
+        limitedDetailsUser.setFriends(String.valueOf(this.getFriends()));
+        limitedDetailsUser.setHobbies(String.valueOf(this.getHobbies()));
+        return limitedDetailsUser;
+    }
+
 }
