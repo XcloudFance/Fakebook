@@ -1,0 +1,71 @@
+.title-bar {
+    width: 100%;
+    height: 60px;
+    border-bottom: #efefef solid 1px;
+}
+
+.title-bar h3 {
+    padding-left: 30px;
+    padding-top: 10px;
+    font-size: 30px;
+}
+
+.settings-container {
+    width: 100%;
+    overflow-x: hidden;
+    padding: 20px;
+}
+
+.avatar-conatiner {
+    display: inline-block;
+    width: 100px;
+    height: 100%;
+}
+
+.avatar-conatiner img {
+    width: 100px;
+    height: 100px;
+    border-radius: 15px;
+    border: #333 solid 2px;
+    vertical-align: top;
+}
+
+.avatar-conatiner h4 {
+    text-align: center;
+    text-decoration: underline;
+    margin-top: 5px;
+}
+
+.information-editing {
+    vertical-align: top;
+    width: calc(100% - 110px);
+    height: fit-content;
+    display: inline-block;
+}
+
+.text-input-set {
+    padding: 10px 10px; 
+    height: min-content;
+}
+
+.text-input-set h4 {
+    display: inline-block;
+    font-size: 20px;
+    padding: 0px;
+    margin: 0px;
+    color: #333;
+}
+
+.text-input-set input {
+    display: inline-block;
+    width: 200px;
+    height: 20px;
+    font-size: 18px;
+    border-radius: 0px;
+    border: #efefef solid 1px;
+    color: #333;
+}
+
+.text-input-set input:focus {
+    outline: none;
+}

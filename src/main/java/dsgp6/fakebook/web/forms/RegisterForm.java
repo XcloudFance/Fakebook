@@ -60,6 +60,14 @@ public class RegisterForm {
         this.phone_number = phone_number;
     }
 
-  
+    public String toString() {
+        return "RegisterForm{" +
+                "uid='" + uid + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", phone_number='" + phone_number + '\'' +
+                '}';
+    }
 
 }
