@@ -80,10 +80,20 @@ public class UserController {
     }
 
     @GetMapping("/searchUser")
-    public ResponseEntity<String> searchUser(@RequestParam(value = "keyword") String keyword,
-                                            @RequestParam("page") String page) {
-
-        return new ResponseEntity<>("{\"code\":0,\"msg\":\"Login succeed!\"}", HttpStatus.OK);
+    public ResponseEntity<String> searchUser(@RequestParam(value = "keyword") String keyword) {
+        User[] results = userService.searchFriend(keyword);
+        String uids = "[";
+        String unames = "[";
+        for(int i = 0;i < results.length;i ++)
+            if(i < results.length - 1) {
+                uids += "\"" + results[i].getUid() + "\",";
+                unames += "\"" + results[i].getUsername() + "\",";
+            }
+            else {
+                uids += "\"" + results[i].getUid() + "\"]";
+                unames += "\"" + results[i].getUsername() + "\"]";
+            }
+        return new ResponseEntity<>("{\"code\":0,\"msg\":\"Success!\", \"data\":{\"uids:\":" + uids +",\"unames\":" + unames +"}", HttpStatus.OK);
     }
 
     @GetMapping("/get_profile")
@@ -147,18 +157,6 @@ public class UserController {
             return ResponseEntity.ok("User profile setup successful.");
         } else {
             return ResponseEntity.badRequest().body("User profile setup failed.");
-        }
-    }
-
-    @GetMapping("/search/friend")
-    public ResponseEntity<User> searchFriend(@RequestParam("friend") String friendId,
-                                             @CookieValue(name = "token") String token) {
-        User searchResult = userService.searchFriend(friendId, token);
-
-        if (searchResult == null) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.ok(searchResult);
         }
     }
 }

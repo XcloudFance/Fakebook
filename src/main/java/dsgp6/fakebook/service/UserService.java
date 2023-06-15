@@ -7,6 +7,7 @@ import dsgp6.fakebook.repository.UserRepository;
 import dsgp6.fakebook.web.forms.RegisterForm;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -121,20 +122,22 @@ public class UserService {
 
     }
 
-    public User searchFriend(String friendId, String uid) {
-        User user = userRepository.getByUid(uid);
-        User friend = null;
-        ArrayList<String> friends = user.getFriends();
+    public User[] searchFriend(String keyword) {
+        List<User> matchingUsers = new ArrayList<>();
+        List<User> allUsers = userRepository.findAll();
 
-        for (String f : friends) {
-            if(f.equals(friendId)){
-                friend = userRepository.getByUid(f);
-                break;
+        for (User user : allUsers) {
+            if (user.getUid().contains(keyword)) {
+                matchingUsers.add(user);
             }
         }
 
-        return friend;
+        User[] result = new User[matchingUsers.size()];
+        return matchingUsers.toArray(result);
     }
+
+
+
 
     //Checks uid is not longer than 15, its availability and consists only of alphabets and numbers
     public boolean isUidValid(String uid) {
