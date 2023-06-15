@@ -1,16 +1,13 @@
 package dsgp6.fakebook.service;
 
+import dsgp6.fakebook.Utils.Auxiliary;
+import dsgp6.fakebook.Utils.Random;
 import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.repository.UserRepository;
 import dsgp6.fakebook.web.forms.RegisterForm;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
-import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import java.util.Random;
 
 @Service
 public class UserService {
@@ -21,23 +18,19 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public boolean registerUser(RegisterForm registerForm) {
+    public User registerUser(RegisterForm registerForm) {
         //Check if entered password is valid or not
-        if (!isPasswordValid(registerForm.getPassword())) {
-            return false;
-        }
+        if (!isPasswordValid(registerForm.getPassword()))
+            return null;
         //Check if entered uid is valid or not
-        if (!isUidValid(registerForm.getUid())) {
-            return false;
-        }
+        if (!isUidValid(registerForm.getUid()))
+            return null;
         //Check if entered username is valid or not
-        if (!isUsernameValid(registerForm.getUsername())) {
-            return false;
-        }
+        if (!isUsernameValid(registerForm.getUsername()))
+            return null;
         //Check if entered email is valid or not
-        if (!isEmailValid(registerForm.getEmail())) {
-            return false;
-        }
+        if (!Auxiliary.isEmailValid(registerForm.getEmail()))
+            return null;
 
         // Create a new User object from the registration form data
         User user = new User();
@@ -48,11 +41,15 @@ public class UserService {
         user.setPhone_number(registerForm.getPhone_number());
 
         userRepository.save(user);
-        return true;
+        return user;
     }
 
     public User loginUser(String uidOrEmail, String password) {
-        User user = userRepository.findByUidOrEmail(uidOrEmail, uidOrEmail);
+        User user;
+        if(Auxiliary.isEmailValid(uidOrEmail))
+            user = userRepository.getByEmail(uidOrEmail);
+        else
+            user = userRepository.getByUid(uidOrEmail);
         //Checks if user exists
         if (user == null) {
             return null;
@@ -62,13 +59,13 @@ public class UserService {
             return null;
         }
         //Set a token to the user
-        user.setToken(generateToken());
+        user.setToken(Random.generateToken(16));
         userRepository.save(user);
         return user;
     }
 
-    public boolean setUserProfile(String uid, String option, String username, String email, String phone_number, String birthday, String address, String gender, String hobbies, String jobs, String friends, String requestToken) {
-        User user = userRepository.findByUid(uid);
+    public boolean setUserProfile(String uid, String option, String username, String email, String phone_number, String birthday, String address, String gender, String hobbies, ArrayList<String> jobs, String requestToken) {
+        User user = userRepository.getByUid(uid);
         if (user == null) {
             return false;
         }
@@ -83,7 +80,6 @@ public class UserService {
         }
         if (option.equals("birthday")) {
             user.setBirthday(birthday);
-            user.setAge(calcAge(user.getBirthday()));
         }
         if (option.equals("address")) {
             user.setAddress(address);
@@ -100,34 +96,24 @@ public class UserService {
         if (option.equals("email")) {
             user.setEmail(email);
         }
-        if (option.equals("friends")) {
-            user.setFriends(friends);
-        }
         userRepository.save(user);
         return true;
 
     }
 
-    public User searchFriend(String friendId, String token) {
-        User user = userRepository.findByToken(token);
+    public User searchFriend(String friendId, String uid) {
+        User user = userRepository.getByUid(uid);
         User friend = null;
         ArrayList<String> friends = user.getFriends();
 
         for (String f : friends) {
             if(f.equals(friendId)){
-                friend = userRepository.findByUid(f);
+                friend = userRepository.getByUid(f);
                 break;
             }
         }
 
         return friend;
-    }
-
-    //Calculate age of user based on birthday
-    public int calcAge(LocalDate birthday) {
-        LocalDate currentDate = LocalDate.now();
-        Period period = Period.between(birthday, currentDate);
-        return period.getYears();
     }
 
     //Checks uid is not longer than 15, its availability and consists only of alphabets and numbers
@@ -138,7 +124,7 @@ public class UserService {
         if (uid.length() > 15) {
             return false;
         }
-        if (userRepository.existsByUid(uid)) {
+        if(userRepository.getByUid(uid) != null) {
             return false;
         }
         return uid.matches("^[A-Za-z0-9]*$");
@@ -149,81 +135,13 @@ public class UserService {
         if (username.length() > 20 || username.length() < 5) {
             return false;
         }
-        return !userRepository.existsByUsername(username);
+        return true;
     }
 
-    //Checks whether password length is within 6-15 characters, and it only contains alphabet and numbers
     public boolean isPasswordValid(String password) {
         if (password.length() < 6 || password.length() > 14) {
             return false;
         }
         return password.matches("^[A-Za-z0-9]*$");
     }
-
-    //Checks email's availability and format
-    public boolean isEmailValid(String email) {
-        if (userRepository.existsByEmail(email)) {
-            return false;
-        }
-        return email.matches("[a-z0-9A-Z.]+@[a-z]+\\.[a-z]{2,3}");
-    }
-
-    public String generateToken() {
-        int tokenLength = 15;
-        String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        StringBuilder token = new StringBuilder();
-        Random r = new Random();
-        for (int i = 0; i < tokenLength; i++) {
-            int randomIndex = r.nextInt(characters.length());
-            token.append(characters.charAt(randomIndex));
-        }
-        String tokenString = token.toString();
-        if(userRepository.existsByToken(tokenString)){
-            generateToken();
-        }
-        return tokenString;
-    }
-
-
-    public User getUserByUid(String uid) {
-        return userRepository.findByUid(uid);
-    }
-
-
-    public User getUserByToken(String token) {
-        return userRepository.findByToken(token);
-    }
-
-
-    public ResponseEntity<?> viewAccount(String uid, String token) {
-        User loggedInUser = getUserByToken(token);
-        User targetUser = getUserByUid(uid);
-
-        if (targetUser == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        if (targetUser.getUid().equals(loggedInUser.getUid())) {
-            // Viewing own account - Return all details
-            return ResponseEntity.ok(targetUser);
-        } else {
-            // Viewing other user's account - Return limited details
-            User limitedDetailsUser = targetUser.hideSensitiveInformation();
-            if (limitedDetailsUser == null) {
-                return ResponseEntity.notFound().build();
-            } else {
-                return ResponseEntity.ok(limitedDetailsUser);
-            }
-        }
-    }
-
-
-
-    public boolean validateToken(String token){
-
-        User user = userRepository.findByToken(token);
-        return user != null;
-    }
-
-
 }

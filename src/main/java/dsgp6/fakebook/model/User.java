@@ -1,11 +1,9 @@
 package dsgp6.fakebook.model;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.*;
@@ -15,29 +13,26 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "user")
 @CompoundIndex(def = "{'uid': 1}", unique = true)
 public class User {
-
     @Id
     private String id;
 
     private String uid;
     private String username;
+    private String salt;
     protected String password;
     protected String email;
     private ArrayList<String> hobbies= new ArrayList<>();
     protected String phone_number;
     private LocalDate birthday;
-    private int age;
     protected String address;
     private String gender;
-    private int numberOfFriends;
     private ArrayList<String> jobs=new ArrayList<>();
     protected String token;
     private ArrayList<String> friends= new ArrayList<>();
 
-
     private boolean online;
-    private List<String> PendingSentRequest = new LinkedList<>();
-    private List<String> PendingReceivedRequest = new LinkedList<>();
+    private ArrayList<String> PendingSentRequest = new ArrayList<>();
+    private ArrayList<String> PendingReceivedRequest = new ArrayList<>();
 
     public boolean isOnline() {
         return online;
@@ -51,9 +46,12 @@ public class User {
         return friends;
     }
 
-    public void setFriends(String friend) {
+    public void addFriend(String uid) {
+        friends.add(uid);
+    }
+
+    public void removeFriend(String friend) {
         friends.add(friend);
-        numberOfFriends++;
     }
 
     public String getToken() {
@@ -126,11 +124,9 @@ public class User {
     }
 
     public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
+        LocalDate today = LocalDate.now();
+        Period age = birthday.until(today);
+        return age.getYears();
     }
 
     public String getAddress() {
@@ -150,52 +146,49 @@ public class User {
     }
 
     public int getNumberOfFriends() {
-        return numberOfFriends;
+        return friends.size();
     }
-
-    public void setNumberOfFriends(int numberOfFriends) {
-        this.numberOfFriends = numberOfFriends;
-    }
-
     public ArrayList<String> getJobs() {
         return jobs;
     }
 
-    public void setJobs(String job) {
-        jobs.add(job);
+    public void setJobs(ArrayList<String> jobs) {
+        this.jobs = jobs;
     }
 
     public User() {
     }
 
-    public List<String> getPendingSentRequest() {
+    public ArrayList<String> getPendingSentRequest() {
         return PendingSentRequest;
     }
 
-    public void setPendingSentRequest(List<String> pendingSentRequest) {
-        PendingSentRequest = pendingSentRequest;
+    public void addPendingSentRequest(String newRequest) {
+        PendingSentRequest.add(newRequest);
     }
 
-    public List<String> getPendingReceivedRequest() {
+    public void acceptPendingSentRequest(String uid) {
+        friends.add(uid);
+        PendingSentRequest.remove(uid);
+    }
+    public void refusePendingSentRequest(String uid) {
+        PendingSentRequest.remove(uid);
+    }
+
+    public ArrayList<String> getPendingReceivedRequest() {
         return PendingReceivedRequest;
     }
 
-    public void setPendingReceivedRequest(List<String> pendingReceivedRequest) {
-        PendingReceivedRequest = pendingReceivedRequest;
+    public void addPendingReceivedRequest(String newRequest) {
+        PendingReceivedRequest.add(newRequest);
     }
 
-    public ViewUser hideSensitiveInformation() {
-        ViewUser limitedDetailsUser = new ViewUser();
-        limitedDetailsUser.setUid(this.getUid());
-        limitedDetailsUser.setUsername(this.getUsername());
-        limitedDetailsUser.setGender(this.getGender());
-        limitedDetailsUser.setBirthday(this.getBirthday().toString());
-        limitedDetailsUser.setAge(this.getAge());
-        limitedDetailsUser.setNumberOfFriends(this.getNumberOfFriends());
-        limitedDetailsUser.setJobs(String.valueOf(this.getJobs()));
-        limitedDetailsUser.setFriends(String.valueOf(this.getFriends()));
-        limitedDetailsUser.setHobbies(String.valueOf(this.getHobbies()));
-        return limitedDetailsUser;
+    public void acceptPendingReceivedRequest(String uid, int opt) {
+        friends.add(uid);
+        PendingSentRequest.remove(uid);
+    }
+    public void refusePendingReceivedRequest(String uid, int opt) {
+        PendingSentRequest.remove(uid);
     }
 
 }
