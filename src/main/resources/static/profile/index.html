@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="./css/index.css">
     <link rel="stylesheet" href="./css/profile.css">
+    <script lang="JavaScript" src="./js/profile.js"></script>
 </head>
 
 <body>
@@ -68,24 +69,33 @@
             <div class="settings-container">
                 <div class="information-settings">
                     <div class="avatar-conatiner">
-                        <img src="./img/blocker.png">
+                        <img src="./img/blocker.png" id="avatar">
                         <h4>choose</h4>
                     </div>
-                    <div class="information-editing">
-                        <div class="text-input-set">
-                            <h4>Username:</h4>
-                            <input id="username-edit" placeholder="Blocker45">
-                        </div>
-                        <div class="text-input-set">
-                            <h4>UserID:</h4>
-                            <input id="username-edit" placeholder="@blocker45">
-                        </div>
-                        <div class="text-input-set">
-                            <h4>Email:</h4>
-                            <input id="username-edit" placeholder="Blockers.xyz@gmail.com">
-                        </div>
-                    </div>
                 </div>
+            </div>
+            <div class="setting-item">
+                <h4>Email</h4>
+                <input id="email_input" disabled>
+            </div>
+            <div class="setting-item">
+                <h4>Uid</h4>
+                <input id="uid_input" disabled>
+            </div>
+            <div class="setting-item">
+                <h4>Username</h4>
+                <input id="username_input">
+            </div>
+            <div class="setting-item">
+                <h4>Phone number</h4>
+                <input id="phone_input">
+            </div>
+            <div class="setting-item">
+                <h4>Address</h4>
+                <input id="add_input">
+            </div>
+            <div class="setting-item">
+                <button id="resetPass_btn">Reset Password</button>
             </div>
         </div>
         <div class="right-sidebar">

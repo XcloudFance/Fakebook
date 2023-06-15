@@ -6,6 +6,8 @@ import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.repository.UserRepository;
 import dsgp6.fakebook.web.forms.RegisterForm;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,24 @@ public class UserService {
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public boolean checkIdentity(String uid, String token) {
+        User user = userRepository.getByUid(uid);
+        if(user == null) return false;
+        if(user.getToken().equals(token)) return true;
+        return false;
+    }
+
+    public Map<String, String> getProfile(String uid) {
+        Map<String, String> profile = new HashMap<>();
+        User user = userRepository.getByUid(uid);
+        profile.put("email", user.getEmail());
+        profile.put("uid", user.getUid());
+        profile.put("username", user.getUsername());
+        profile.put("phone", user.getPhone_number());
+        profile.put("address", user.getAddress());
+        return profile;
     }
 
     public User registerUser(RegisterForm registerForm) {
