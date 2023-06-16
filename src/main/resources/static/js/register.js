@@ -69,7 +69,7 @@ window.onload = function () {
 
         var jsonData = {
             email: email,
-            phone: phone.toString(),
+            phone_number: phone.toString(),
             uid: uid,
             username: uname,
             password: password
