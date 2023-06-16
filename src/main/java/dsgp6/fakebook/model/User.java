@@ -190,5 +190,4 @@ public class User {
     public void refusePendingReceivedRequest(String uid, int opt) {
         PendingSentRequest.remove(uid);
     }
-
 }

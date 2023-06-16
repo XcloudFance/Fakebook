@@ -84,6 +84,10 @@ public class UserController {
         User[] results = userService.searchFriend(keyword);
         String uids = "[";
         String unames = "[";
+        if (results.length == 0) {
+            uids = "[]";
+            unames = "[]";
+        }
         for(int i = 0;i < results.length;i ++)
             if(i < results.length - 1) {
                 uids += "\"" + results[i].getUid() + "\",";
@@ -93,7 +97,7 @@ public class UserController {
                 uids += "\"" + results[i].getUid() + "\"]";
                 unames += "\"" + results[i].getUsername() + "\"]";
             }
-        return new ResponseEntity<>("{\"code\":0,\"msg\":\"Success!\", \"data\":{\"uids:\":" + uids +",\"unames\":" + unames +"}", HttpStatus.OK);
+        return new ResponseEntity<>("{\"code\":0,\"msg\":\"Success!\", \"data\":{\"uids\":" + uids +",\"unames\":" + unames +"}}", HttpStatus.OK);
     }
 
     @GetMapping("/get_profile")

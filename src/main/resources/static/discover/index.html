@@ -66,7 +66,7 @@
 
             <div class="search-container">
                 <div class="searchbox-container">
-                    <form onsubmit="event.preventDefault();" role="search" class="search-form">
+                    <form onsubmit="search(event);" role="search" class="search-form">
                         <input id="search-box" type="search-box" placeholder="Search..." autofocus required />
                         <button type="submit" class="search-button">
                             <svg viewBox="0 0 21 21" aria-hidden="true">
@@ -81,21 +81,9 @@
                     <h3 class="selected-searchtab" id="search-tabs-posts">Posts</h3>
                     <h3 id="search-tabs-users">Users</h3>
                 </div>
-                <div class="search_results">
-                    <div class="user-item">
-                        <div class="avatar-container">
-                            <img>
-                        </div>
-                        <div class="user-item-info">
-                            <h4>Username</h4>
-                            <p>@uid</p>
-                        </div>
-                        <div class="user-item-opt">
-                            <svg></svg>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
+            <div id="search_results"></div>
 
         </div>
         <div class="right-sidebar">
