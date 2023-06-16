@@ -1,6 +1,8 @@
 package dsgp6.fakebook.web.controller;
 
+import dsgp6.fakebook.model.Post;
 import dsgp6.fakebook.model.User;
+import dsgp6.fakebook.repository.PRepository;
 import dsgp6.fakebook.service.UserService;
 import dsgp6.fakebook.web.forms.RegisterForm;
 import org.springframework.core.io.ClassPathResource;
@@ -19,16 +21,19 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
+    private final PRepository pRepository;
+    public UserController(UserService userService,PRepository pRepository) {
         this.userService = userService;
+        this.pRepository = pRepository;
     }
 
     @GetMapping(value = "/avatar/{uid}", produces = MediaType.IMAGE_PNG_VALUE)
@@ -116,6 +121,8 @@ public class UserController {
         return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
     }
 
+
+
     @PostMapping("/uploadAvatar")
     public ResponseEntity<String> uploadAvatar(@RequestParam("avatar") MultipartFile file, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
         if(userService.checkIdentity(uid, token)) {
@@ -163,4 +170,96 @@ public class UserController {
             return ResponseEntity.badRequest().body("User profile setup failed.");
         }
     }
+
+
+    @GetMapping("/viewpost")
+    public ResponseEntity<String> viewPost(@CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+        if (userService.checkIdentity(uid, token)) {
+            List<String> friendIds = userService.getFriends(uid);
+            List<String> posts = new ArrayList<>();
+
+            for (String friendId : friendIds) {
+                User friend = userService.getByUid(friendId);
+                if (friend != null) {
+                    List<String> friendPosts = friend.getPosts();
+                    posts.addAll(friendPosts);
+                }
+            }
+
+            String data = "[";
+
+            for (String postId : posts) {
+                Post post = this.pRepository.getById(postId);
+                String content = post.getContent();
+                int likes = post.getLikes();
+                int views = post.getViews();
+
+                data += "{\"postId\":\"" + postId + "\",\"content\":\"" + content + "\",\"likes\":" + likes + ",\"views\":" + views + "},";
+            }
+
+            if (!posts.isEmpty()) {
+                data = data.substring(0, data.length() - 1);
+            }
+
+            data += "]";
+            return new ResponseEntity<>("{\"code\":0,\"msg\":\"success!\",\"data\":" + data + "}", HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
+    }
+    
+    private String generatePostId() {
+        // 实现你自己的逻辑来生成帖子的唯一ID
+        return UUID.randomUUID().toString();
+    }
+    @PostMapping("/{userId}/createPost")
+    public ResponseEntity<String> createPost(@PathVariable String userId, @RequestBody String content, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+        if (userService.checkIdentity(uid, token)) {
+            User user = userService.getByUid(userId);
+            if (user != null) {
+
+                Post newpost = new Post(content);
+                // 为新帖子生成ID
+                String postId = generatePostId(); // 你可以根据自己的需求生成帖子的唯一ID
+
+                // 设置帖子ID并保存到数据库
+                newpost.setId(postId);
+                
+                this.pRepository.save(newpost);
+
+                // 将帖子添加到用户的帖子列表
+                user.createPost(postId);
+
+                return new ResponseEntity<>("{\"code\":0,\"msg\":\"Post created successfully!\"}", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("{\"code\":-1,\"msg\":\"User not found!\"}", HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.UNAUTHORIZED);
+        }
+    }
+    @DeleteMapping("/{userId}/deletePost/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable String userId, @PathVariable String postId, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+    if (userService.checkIdentity(uid, token)) {
+        User user = userService.getByUid(userId);
+        if (user != null) {
+            // 检查帖子是否存在
+            String post = user.getPostById(postId);
+            if (post != null) {
+                user.deletePost(userId);
+                // 从数据库中删除帖子
+                this.pRepository.deleteById(postId);
+
+                return new ResponseEntity<>("{\"code\":0,\"msg\":\"Post deleted successfully!\"}", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Post not found!\"}", HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>("{\"code\":-1,\"msg\":\"User not found!\"}", HttpStatus.NOT_FOUND);
+        }
+    } else {
+        return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.UNAUTHORIZED);
+    }
+}
+
 }

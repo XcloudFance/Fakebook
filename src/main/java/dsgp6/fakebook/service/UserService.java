@@ -167,4 +167,18 @@ public class UserService {
         }
         return password.matches("^[A-Za-z0-9]*$");
     }
+
+    public List<String> getFriends(String uid) {
+        User user = userRepository.getByUid(uid);
+
+        return user.getFriends();
+    }
+
+    public User getByUid(String friendId) {
+        return userRepository.getByUid(friendId);
+    }
+
+
+
+  
 }

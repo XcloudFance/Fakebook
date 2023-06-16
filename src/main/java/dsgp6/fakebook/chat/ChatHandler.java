@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import dsgp6.fakebook.chat.HashSet;
 import java.util.Set;
-/*
+
 @Component
 public class ChatHandler extends TextWebSocketHandler {
     private static Set<WebSocketSession> sessions = new HashSet<>();
@@ -47,7 +47,7 @@ public class ChatHandler extends TextWebSocketHandler {
     }
 
     private void updateUserOnlineStatus(String sessionId, boolean online) {
-        User user = userRepository.getUserByUsername(sessionId);
+        User user = userRepository.getByUid(sessionId);
         if (user != null) {
             user.setOnline(online);
             userRepository.save(user);
@@ -69,8 +69,8 @@ public class ChatHandler extends TextWebSocketHandler {
         String content = jsonMessage.get("content").asText();
 
         // 在消息存入MongoDB之前，先查找发送者和接收者的在线状态
-        User sender = userRepository.getUserByUsername(senderId);
-        User recipient = userRepository.getUserByUsername(recipientId);
+        User sender = userRepository.getByUid(senderId);
+        User recipient = userRepository.getByUid(recipientId);
 
         // 将消息存入MongoDB
         Message messageObj = new Message();
@@ -91,4 +91,3 @@ public class ChatHandler extends TextWebSocketHandler {
         }
     }
 }
-*/

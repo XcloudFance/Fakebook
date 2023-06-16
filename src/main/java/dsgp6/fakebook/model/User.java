@@ -29,7 +29,7 @@ public class User {
     private ArrayList<String> jobs=new ArrayList<>();
     protected String token;
     private ArrayList<String> friends= new ArrayList<>();
-
+    private ArrayList<String> posts = new ArrayList<>();
     private boolean online;
     private ArrayList<String> PendingSentRequest = new ArrayList<>();
     private ArrayList<String> PendingReceivedRequest = new ArrayList<>();
@@ -190,4 +190,28 @@ public class User {
     public void refusePendingReceivedRequest(String uid, int opt) {
         PendingSentRequest.remove(uid);
     }
+
+    public List<String> getPosts() {
+        return posts;
+    }
+
+    public void createPost(String postId) {
+        if (posts == null) {
+            posts = new ArrayList<>();
+        }
+        posts.add(postId);
+    }
+    public String getPostById(String postId) {
+        for (String id : posts) {
+            if(id == postId){
+                return id;
+            }
+        }
+        return null; // 如果未找到对应的帖子，则返回null
+    }
+
+    public void deletePost(String postId) {
+        posts.remove(postId);
+    }
+
 }
