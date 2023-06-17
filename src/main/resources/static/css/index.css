@@ -179,6 +179,14 @@ body {
     height: 50px;
 }
 
+.post_user_avatar a img {
+    margin-left: 10px;
+    margin-top: 10px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
+
 .post_content {
     width: calc(100% - 80px);
     padding: 10px;
@@ -220,14 +228,14 @@ body {
     padding: 0px;
 }
 
-.post_detail a{
+.post_detail a {
     text-decoration: none;
     color: #4a99e9;
     padding-left: 2px;
     padding-right: 2px;
 }
 
-.post_detail a:hover{
+.post_detail a:hover {
     text-decoration: underline;
 }
 
@@ -265,11 +273,26 @@ body {
     font-size: 13px;
 }
 
+.post_statistic a b {
+    display: inline;
+    color: #333;
+    font-size: 13px;
+}
+
 .post_likes svg {
     display: inline-block;
     width: 20px;
     height: 20px;
-    vertical-align:middle;
+    vertical-align: middle;
+    border-radius: 10px;
+    transition: all 0.3s ease-out;
+}
+
+.post_likes a svg {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
     border-radius: 10px;
     transition: all 0.3s ease-out;
 }
@@ -295,7 +318,7 @@ body {
 .post_likes p {
     display: inline-block;
     color: #333;
-    vertical-align:middle;
+    vertical-align: middle;
     padding-right: 10px;
 }
 
@@ -307,7 +330,7 @@ body {
 .chat_list {
     width: 100%;
     height: 100%;
-    overflow-y:auto
+    overflow-y: auto
 }
 
 .chat_item {
@@ -345,7 +368,7 @@ body {
     display: inline-block;
 }
 
-.chat_item_topbar h3{
+.chat_item_topbar h3 {
     user-select: none;
     padding: 0px;
     margin: 0px;
@@ -373,10 +396,11 @@ body {
     width: 16px;
     display: inline-block;
     fill: #ff0000;
-    display:none;
+    display: none;
 }
 
-.message-received, .message-sent {
+.message-received,
+.message-sent {
     width: calc(100% - 75px);
     padding: 10px;
     height: min-content;
@@ -468,7 +492,7 @@ body {
     border-bottom: #efefef solid 1px;
 }
 
-.chat_input_text textarea{
+.chat_input_text textarea {
     width: calc(100% - 10px);
     height: 50px;
     font-size: 15px;
@@ -484,7 +508,7 @@ body {
     margin-top: 3px;
 }
 
-.chat_input_text textarea:focus{
+.chat_input_text textarea:focus {
     outline: none;
     text-align: left;
     border: #3b5998 solid 1px;
@@ -511,4 +535,208 @@ body {
 
 .chat_input_buttons div svg:hover {
     fill: #3b5998;
+}
+
+.post_edit {
+    width: calc(100% - 60px);
+    height: 65px;
+    border-bottom: #efefef solid 1px;
+    display: inline-block;
+}
+
+.post_headbar {
+    padding-left: 10px;
+    width: calc(100% - 20px);
+    height: 40px;
+    border-bottom: none;
+}
+
+.post_textinput {
+    padding-left: 10px;
+    width: calc(100% - 20px);
+    min-height: 65px;
+}
+
+.post_headbar svg {
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    display: inline-block;
+    fill: #afafaf;
+    transition: scale 0.5s ease-out;
+}
+
+.post_headbar svg:hover {
+    fill: #3b5998;
+    transition: all 100ms ease-in;
+}
+
+.post_textinput textarea {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    min-height: 30px;
+    border: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    resize: none;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    border-bottom: #efefef solid 1px;
+}
+
+.post_textinput textarea:focus {
+    outline: none;
+}
+
+.post_bottom {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 40px;
+}
+
+.post_bottom p {
+    color: #afafaf;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    padding: 0px;
+    margin: 0px;
+    display: inline-block;
+    padding-top: 5px;
+}
+
+.post_btn {
+    user-select: none;
+    display: inline-block;
+    padding: 0px;
+    width: 60px;
+    height: 36px;
+    border-radius: 10px;
+    border: #3b5998 solid 2px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #3b5998;
+    font-size: 18px;
+    background-color: #fff;
+    transition: all 100ms ease-in;
+    float: right;
+    margin-right: 10px;
+}
+
+.post_btn:hover {
+    background-color: #3b5998;
+    color: #fff;
+    transition: scale 0.5s ease-out;
+}
+
+.preview_img {
+    padding: 5px;
+    width: 50px;
+    height: 30px;
+}
+
+.comments-container {
+    width: 100%;
+}
+
+
+.forward_edit {
+    width: calc(100% - 60px);
+    height: 65px;
+    display: inline-block;
+}
+
+.forward_headbar {
+    padding-left: 10px;
+    width: calc(100% - 20px);
+    height: 40px;
+    border-bottom: none;
+}
+
+.forward_textinput {
+    padding-left: 10px;
+    width: calc(100% - 20px);
+    min-height: 65px;
+}
+
+.forward_headbar svg {
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    display: inline-block;
+    fill: #afafaf;
+    transition: scale 0.5s ease-out;
+}
+
+.forward_textinput textarea {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    min-height: 30px;
+    border: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    resize: none;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+.forward_textinput textarea:focus {
+    outline: none;
+}
+
+.forward_bottom {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 40px;
+}
+
+.forward_bottom p {
+    color: #afafaf;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    padding: 0px;
+    margin: 0px;
+    display: inline-block;
+    padding-top: 5px;
+}
+
+.forward_btn {
+    user-select: none;
+    display: inline-block;
+    padding: 0px;
+    width: 100px;
+    height: 36px;
+    border-radius: 10px;
+    border: #3b5998 solid 2px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #3b5998;
+    font-size: 18px;
+    background-color: #fff;
+    transition: all 100ms ease-in;
+    float: right;
+    margin-right: 10px;
+}
+
+.forward_btn:hover {
+    background-color: #3b5998;
+    color: #fff;
+    transition: scale 0.5s ease-out;
+}
+
+.forward_user_avatar {
+    width: 50px;
+    vertical-align: top;
+    display: inline-block;
+}
+
+.forward_user_avatar img {
+    margin-left: 10px;
+    margin-top: 10px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
 }
