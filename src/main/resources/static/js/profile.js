@@ -1,3 +1,11 @@
+function clearAllCookie() {
+    var keys = document.cookie.match(/[^ =;]+(?=\=)/g);
+    if (keys) {
+        for (var i = keys.length; i--;)
+            document.cookie = keys[i] + '=0;expires=' + new Date(0).toUTCString()
+    }
+}
+
 window.onload = function () {
     function getCookie(name) {
         const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
@@ -92,6 +100,11 @@ window.onload = function () {
                 avatarElement.src += "?v=" + Math.floor(Math.random() * 114514) + 1;;
             })
             .catch(error => console.log('Error:', error));
+    }
+
+    document.getElementById("logout_btn").onclick = function() {
+        clearAllCookie();
+        location.reload();
     }
 
 }

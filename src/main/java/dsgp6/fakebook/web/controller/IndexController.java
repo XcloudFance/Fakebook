@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -19,6 +20,11 @@ public class IndexController {
     @GetMapping("/login")
     public String getLogin() throws IOException {
         return getIndexContent("static/login/index.html");
+    }
+
+    @GetMapping("/user/{uid}")
+    public String getUser(@RequestParam String uid) throws IOException {
+        return getIndexContent("static/user/index.html?uid=" + uid);
     }
 
     @GetMapping("/register")

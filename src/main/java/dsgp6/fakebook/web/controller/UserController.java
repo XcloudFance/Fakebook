@@ -199,9 +199,6 @@ public class UserController {
     }
 
 
-
-
-
     @PostMapping("/set_profile")
     public ResponseEntity<String> setUserProfile(@RequestBody Map<String, String> requestBody,
                                                  @CookieValue(name = "token") String token,
@@ -235,6 +232,24 @@ public class UserController {
             friend.addPendingReceivedRequest(uid);
             User user = userService.getByUid(uid);
             user.addPendingSentRequest(friend_uid);
+            userService.save(user);
+            userService.save(friend);
+            return new ResponseEntity<>("{\"code\":0,\"msg\":\"Success!\"}", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
+    }
+
+    @GetMapping("/deleteFriend")
+    public ResponseEntity<String> deleteFriend(@RequestParam("uid") String friend_uid,@CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+        if(userService.checkIdentity(uid, token)) {
+            User friend = userService.getByUid(friend_uid);
+            if(friend == null)
+                return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Target UID Doesn't Exist!\"}", HttpStatus.OK);
+            if(!userService.getFriends(uid).contains(friend_uid) || friend_uid.equals(uid))
+                return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Not Friends!\"}", HttpStatus.OK);
+            friend.getFriends().remove(uid);
+            User user = userService.getByUid(uid);
+            user.getFriends().remove(friend_uid);
             userService.save(user);
             userService.save(friend);
             return new ResponseEntity<>("{\"code\":0,\"msg\":\"Success!\"}", HttpStatus.OK);

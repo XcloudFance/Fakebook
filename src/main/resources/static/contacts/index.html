@@ -66,7 +66,7 @@
             <div class="search-container">
                 <div class="searchbox-container">
                     <form onsubmit="event.preventDefault();" role="search" class="search-form">
-                        <input id="search-box" type="search-box" placeholder="Search..." autofocus required />
+                        <input id="search-box" type="search-box" placeholder="Search..." oninput="filterFriends(this)" autofocus required />
                         <button type="submit" class="search-button">
                             <svg viewBox="0 0 21 21" aria-hidden="true">
                                 <path
