@@ -1,0 +1,33 @@
+.avatar {
+    width: 60px;
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 15px;
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.header-content {
+    width: calc(100% - 100px);
+    display: inline-block;
+}
+
+.header-content p, h4{
+    padding: 0px;
+    margin: 0px;
+    color: #444;
+}
+
+.header-info {
+    width: 100%;
+    border-bottom: #efefef solid 1px;
+}
+
+.header-opt {
+    width: 30px;
+    height: 100%;
+}

@@ -36,6 +36,10 @@ public class UserService {
         profile.put("username", user.getUsername());
         profile.put("phone", user.getPhone_number());
         profile.put("address", user.getAddress());
+        profile.put("hobbies", user.getHobbies());
+        profile.put("jobs", user.getJobs());
+        profile.put("gender", user.getGender());
+        profile.put("birthday", user.getBirthday().toString());
         return profile;
     }
 
@@ -60,6 +64,7 @@ public class UserService {
         user.setPassword(registerForm.getPassword());
         user.setEmail(registerForm.getEmail());
         user.setPhone_number(registerForm.getPhone_number());
+        user.setToken(Random.generateToken(16));
 
         userRepository.save(user);
         return user;
@@ -85,41 +90,35 @@ public class UserService {
         return user;
     }
 
-    public boolean setUserProfile(String uid, String option, String username, String email, String phone_number, String birthday, String address, String gender, String hobbies, ArrayList<String> jobs, String requestToken) {
+    public void setUserProfile(String uid, String username, String phone_number, String birthday, String address, String gender, String hobbies, String jobs) {
         User user = userRepository.getByUid(uid);
-        if (user == null) {
-            return false;
-        }
-        if (!requestToken.equals(user.getToken())) {
-            return false;
-        }
-        if (option.equals("username")) {
+        if (username != null) {
             user.setUsername(username);
         }
-        if (option.equals("phone_number")) {
+        if (phone_number != null) {
             user.setPhone_number(phone_number);
         }
-        if (option.equals("birthday")) {
+        if (birthday != null) {
             user.setBirthday(birthday);
         }
-        if (option.equals("address")) {
+        if (address != null) {
             user.setAddress(address);
         }
-        if (option.equals("gender")) {
+        if (gender != null) {
             user.setGender(gender);
         }
-        if (option.equals("hobbies")) {
+        if (hobbies != null) {
             user.setHobbies(hobbies);
         }
-        if (option.equals("jobs")) {
+        if (jobs != null) {
             user.setJobs(jobs);
         }
-        if (option.equals("email")) {
-            user.setEmail(email);
-        }
         userRepository.save(user);
-        return true;
+        return;
+    }
 
+    public void save(User user) {
+        userRepository.save(user);
     }
 
     public User[] searchFriend(String keyword) {

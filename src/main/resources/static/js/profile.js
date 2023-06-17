@@ -16,6 +16,39 @@ window.onload = function () {
 
     setAvatar(uid);
 
+    document.getElementById("saveProfile_btn").onclick = function () {
+        profileData = {
+            email: document.getElementById('email_input').value,
+            uid: document.getElementById('uid_input').value,
+            username: document.getElementById('username_input').value,
+            phone: document.getElementById('phone_input').value,
+            address: document.getElementById('addr_input').value,
+            jobs: document.getElementById('jobs_input').value,
+            hobbies: document.getElementById('hobbies_input').value,
+            birthday: document.getElementById('birthday_input').value,
+            gender: document.getElementById('gender_input').value
+        }
+
+        fetch('/api/user/set_profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(profileData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                // 处理响应数据
+                console.log(data);
+                alert("Success");
+                location.reload();
+            })
+            .catch(error => {
+                // 处理错误
+                console.error(error);
+            });
+    }
+
     fetch('./api/user/get_profile')
         .then(response => response.json())
         .then(data => {
@@ -25,7 +58,11 @@ window.onload = function () {
                 document.getElementById('uid_input').value = profileData.uid;
                 document.getElementById('username_input').value = profileData.username;
                 document.getElementById('phone_input').value = profileData.phone;
-                document.getElementById('add_input').value = profileData.address;
+                document.getElementById('addr_input').value = profileData.address;
+                document.getElementById('jobs_input').value = profileData.jobs;
+                document.getElementById('hobbies_input').value = profileData.hobbies;
+                document.getElementById('birthday_input').value = profileData.birthday;
+                document.getElementById('gender_input').value = profileData.gender;
             }
         })
         .catch(error => console.log('Error:', error));
@@ -45,14 +82,16 @@ window.onload = function () {
         formData.append('avatar', file);
 
         fetch('/api/user/uploadAvatar', {
-          method: 'POST',
-          body: formData,
+            method: 'POST',
+            body: formData,
         })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Upload Response:', data);
-          })
-          .catch(error => console.log('Error:', error));
-      }    
+            .then(response => response.json())
+            .then(data => {
+                console.log('Upload Response:', data);
+                const avatarElement = document.getElementById('avatar');
+                avatarElement.src += "?v=" + Math.floor(Math.random() * 114514) + 1;;
+            })
+            .catch(error => console.log('Error:', error));
+    }
 
 }

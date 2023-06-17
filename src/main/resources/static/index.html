@@ -5,6 +5,7 @@
     <title>Home / Fakebook</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="./css/index.css">
+    <script lang="JavaScript" src="./js/index.js"></script>
 </head>
 
 <body>
@@ -60,7 +61,34 @@
             </div>
 
         </div>
-        <div class="main-container">
+        <div class="main-container" id="main-container">
+
+            <div class="post-editor" id="post-editor">
+                <div class="post_user_avatar">
+                    <img id="user-avatar">
+                </div>
+                <div class="post_edit">
+                    <div class="post_headbar" id="post_headbar">
+                        <svg class="icon" id="addIMG_btn" viewBox="0 0 1024 1024" version="1.1"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M832 192 512 192c0-52.928-43.072-96-96-96l-64 0C299.072 96 256 139.072 256 192L160 192C107.072 192 64 235.072 64 288l0 512c0 52.928 43.072 96 96 96l417.888 0c9.088 0 17.792-3.872 23.84-10.656s8.96-15.84 7.968-24.864c-0.928-8.416-1.568-16.864-1.568-25.536 0-141.664 132.192-254.688 279.904-216.672 9.568 2.4 19.744 0.352 27.584-5.728C923.424 606.496 928 597.152 928 587.296L928 288C928 235.072 884.928 192 832 192zM480 736c-105.888 0-192-86.112-192-192s86.112-192 192-192 192 86.112 192 192S585.888 736 480 736zM784 416c-26.496 0-48-21.504-48-48s21.504-48 48-48 48 21.504 48 48S810.496 416 784 416z">
+                            </path>
+                            <path
+                                d="M832 673.984c-88.384 0-160 71.616-160 160s71.616 160 160 160 160-71.616 160-160S920.384 673.984 832 673.984zM896 864l-32 0 0 32c0 17.696-14.304 32-32 32s-32-14.304-32-32l0-32-32 0c-17.696 0-32-14.304-32-32s14.304-32 32-32l32 0 0-32c0-17.696 14.304-32 32-32s32 14.304 32 32l0 32 32 0c17.696 0 32 14.304 32 32S913.696 864 896 864z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="post_textinput">
+                        <textarea placeholder="Send your new post here..." oninput="adjustTextareaHeight(this)"
+                            maxlength="500" id="post_textarea"></textarea>
+                        <div class="post_bottom">
+                            <p id="post_word_count">0/500</p>
+                            <button class="post_btn" id="post_btn">Post</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
             <div class="post_card">
@@ -213,6 +241,11 @@
                         </svg>
                         <p>2</p>
                     </div>
+                    <div class="forward-editor" id="forward-editor">
+                        <div class="forward_user_avatar">
+                            <img id="user-avatar" src="/api/user/avatar/blocker45">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -342,6 +375,7 @@
 
         </div>
         <div class="right-sidebar">
+            <!--
             <h3 class="chats-topbar"><a>&lt; </a></a>Elon Musk</h3>
             <div class="chat_view">
                 <div class="chat_history">
@@ -406,6 +440,7 @@
                     </div>
                 </div>
             </div>
+            -->
         </div>
     </div>
 </body>

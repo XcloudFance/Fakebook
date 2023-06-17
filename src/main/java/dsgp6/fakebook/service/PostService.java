@@ -14,8 +14,8 @@ public class PostService {
         this.PRepository = PRepository;
     }
 
-    public Post createPost(String content) {
-        Post post = new Post(content);
+    public Post createPost(String content, String uid) {
+        Post post = new Post(content, uid);
         return PRepository.save(post);
     }
 

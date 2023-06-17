@@ -88,7 +88,7 @@ window.onload = function () {
                     for (let i = 0;i < json.cookie.split(";").length;i ++)
                         document.cookie = json.cookie.split(";")[i];
                     login_btn.innerHTML = "success";
-                    location.href = "http://127.0.0.1:8000";
+                    location.href = "http://127.0.0.1:8080";
                 } else {
                     alert("Login Failed!");
                     location.reload();

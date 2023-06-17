@@ -1,6 +1,7 @@
 package dsgp6.fakebook.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -21,12 +22,12 @@ public class User {
     private String salt;
     protected String password;
     protected String email;
-    private ArrayList<String> hobbies= new ArrayList<>();
+    private String hobbies = "To be Edited...";
     protected String phone_number;
-    private LocalDate birthday;
-    protected String address;
-    private String gender;
-    private ArrayList<String> jobs=new ArrayList<>();
+    private LocalDate birthday = LocalDate.from(LocalDateTime.now());
+    protected String address = "To be Edited...";
+    private String gender = "To be Edited...";
+    private String jobs = "To be Edited...";
     protected String token;
     private ArrayList<String> friends= new ArrayList<>();
     private ArrayList<String> posts = new ArrayList<>();
@@ -51,7 +52,7 @@ public class User {
     }
 
     public void removeFriend(String friend) {
-        friends.add(friend);
+        friends.remove(friend);
     }
 
     public String getToken() {
@@ -106,12 +107,12 @@ public class User {
         this.email = email;
     }
 
-    public ArrayList<String> getHobbies() {
+    public String getHobbies() {
         return hobbies;
     }
 
     public void setHobbies(String hobby) {
-        hobbies.add(hobby);
+        hobbies = hobby;
     }
 
     public LocalDate getBirthday() {
@@ -148,11 +149,11 @@ public class User {
     public int getNumberOfFriends() {
         return friends.size();
     }
-    public ArrayList<String> getJobs() {
+    public String getJobs() {
         return jobs;
     }
 
-    public void setJobs(ArrayList<String> jobs) {
+    public void setJobs(String jobs) {
         this.jobs = jobs;
     }
 
@@ -183,12 +184,12 @@ public class User {
         PendingReceivedRequest.add(newRequest);
     }
 
-    public void acceptPendingReceivedRequest(String uid, int opt) {
+    public void acceptPendingReceivedRequest(String uid) {
         friends.add(uid);
-        PendingSentRequest.remove(uid);
+        PendingReceivedRequest.remove(uid);
     }
-    public void refusePendingReceivedRequest(String uid, int opt) {
-        PendingSentRequest.remove(uid);
+    public void refusePendingReceivedRequest(String uid) {
+        getPendingReceivedRequest().remove(uid);
     }
 
     public List<String> getPosts() {
@@ -212,6 +213,13 @@ public class User {
 
     public void deletePost(String postId) {
         posts.remove(postId);
+    }
+
+    public void init() {
+        posts.clear();
+        friends.clear();
+        PendingSentRequest.clear();
+        PendingReceivedRequest.clear();
     }
 
 }
