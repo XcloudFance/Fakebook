@@ -245,6 +245,8 @@ function checkQuote(content, postID) {
 function search(event) {
     event.preventDefault();
     var poststab = document.getElementById("search-tabs-posts");
+    var search_result = document.getElementById("search_results");
+    search_result.innerHTML = "";
     var keyword = document.getElementById("search-box").value;
     if (poststab.getAttribute("class") == "selected-searchtab") {
         fetch("/api/user/searchPost?keyword=" + keyword, {
@@ -261,6 +263,8 @@ function search(event) {
                     const posts = data.data;
 
                     // 处理 posts 数据
+                    if(posts.length == 0)
+                        document.getElementById("search_results").innerHTML = `<p style="text-align:center;">No results found</p>`;
                     for (const post of posts) {
                         const postId = post.postId;
                         const content = post.content;
