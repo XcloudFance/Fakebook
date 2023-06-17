@@ -52,7 +52,7 @@ function show_forward(forward_btn) {
             maxlength="500" id="forward_textarea${uid}"></textarea>
         <div class="forward_bottom">
             <p id="forward_word_count${uid}">0/500</p>
-            <button class="forward_btn" id="forward_btn${uid}">Forward</button>
+            <button class="forward_btn" id="forward_btn${uid}" onclick="forward(this)">Forward</button>
         </div>
     </div>
 </div>`;
@@ -63,8 +63,8 @@ function show_forward(forward_btn) {
 }
 
 function forward(forward_btn) {
-    var uid = forward_btn.getAttribute("id").replace("forward_", "");
-    var content = `{"text":"` + textarea.value + `", "imgs":\"\", "quote":["${uid}"]}`;
+    var uid = forward_btn.getAttribute("id").replace("forward_btn", "");
+    var content = `{"text":"` + document.getElementById("forward_textarea" + uid).value + `", "imgs":\"\", "quote":["${uid}"]}`;
     fetch('/api/user/createPost', {
         method: 'POST',
         headers: {
@@ -98,7 +98,6 @@ function forward(forward_btn) {
 
 function parseQuote(content, uid, username, posttime, views, comments, forwards, likes, postId) {
     var content = JSON.parse((JSON.parse(content.replaceAll("\"", "\\\"").replace("\\\"content\\\":\\\"", "\"content\":\"").replace("}\\\"", "}\""))["content"]));
-    var quote = "";
     var album = content["imgs"];
     var card_general = `
     <div class="post_user_avatar">
@@ -113,7 +112,6 @@ function parseQuote(content, uid, username, posttime, views, comments, forwards,
         </div>
         <div class="post_detail">
             ${parseText(content["text"])}
-            ${quote}
             ${album}
         <div class="post_statistic">
             <p>${posttime}</p>
@@ -125,13 +123,50 @@ function parseQuote(content, uid, username, posttime, views, comments, forwards,
     return card_general;
 }
 
+function checkQuote(content, postID) {
+    var content = JSON.parse((JSON.parse(content.replaceAll("\"", "\\\"").replace("\\\"content\\\":\\\"", "\"content\":\"").replace("}\\\"", "}\""))["content"]));
+    if(content["quote"].length == 0)
+        return;
+    fetch("/api/user/getPost?postID=" + content["quote"][0], {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            // 处理返回的数据
+            if (data.code === 0) {
+                // 请求成功
+                const post = data;
+                const postId = post.postId;
+                const content = post.content;
+                const likes = post.likes;
+                const views = post.views;
+                const comments = post.comments;
+                const username = post.post_username;
+                const uid = post.uid;
+                const forwards = post.forwards;
+                const posttime = post.posttime;
+                var parsed_quote = parseQuote(content, uid, username, posttime, views, comments, forwards, likes, postId);
+                var quote = document.createElement("div");
+                quote.setAttribute("class", "post_card_quote");
+                quote.innerHTML = parsed_quote;
+                document.getElementById("post_detail_" + postID).insertBefore(quote, document.getElementById("post_statistic" + postID));
+            } else {
+                // 请求失败
+                const errorMsg = data.msg;
+                console.log(`Error: ${errorMsg}`);
+            }
+        })
+        .catch(error => {
+            console.log("Error occurred during API request:", error);
+        });
+
+}
+
 function parsePOST(content, uid, username, posttime, views, comments, forwards, likes, postId) {
     var content = JSON.parse((JSON.parse(content.replaceAll("\"", "\\\"").replace("\\\"content\\\":\\\"", "\"content\":\"").replace("}\\\"", "}\""))["content"]));
-    if(content["quote"].length > 0) {
-        
-    }else {
-        var quote = "";
-    }
     var album = content["imgs"];
     var card_general = `
     <div class="post_user_avatar">
@@ -144,11 +179,10 @@ function parsePOST(content, uid, username, posttime, views, comments, forwards, 
                 <p onclick="location.href = '/user/${uid}';">${uid}</p>
             </div>
         </div>
-        <div class="post_detail">
+        <div class="post_detail" id="post_detail_${postId}">
             ${parseText(content["text"])}
-            ${quote}
             ${album}
-        <div class="post_statistic">
+        <div class="post_statistic" id="post_statistic${postId}">
             <p>${posttime}</p>
             <p>·</p>
             <b>${views}</b>
@@ -220,6 +254,7 @@ function getPosts() {
                     newPost.innerHTML = parsed_post;
                     var post_editor = document.getElementById("post-editor");
                     insertAfter(newPost, post_editor);
+                    checkQuote(content, postId);
                 }
             } else {
                 // 请求失败

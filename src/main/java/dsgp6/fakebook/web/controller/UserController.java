@@ -487,7 +487,7 @@ public class UserController {
             LocalDateTime postTime = post.getPostTime();
             String posttime = Auxiliary.formatDateTime(postTime);
 
-            String data = "{\"postId\":\"" + post.getId() + "\",\"uid\":\"" + post_uid + "\",\"post_username\":\"" + post_useranme + "\",\"forwards\":\"" + forwards + "\",\"posttime\":\"" + posttime + "\",\"content\":\"" + content + "\",\"likes\":" + likes + ",\"views\":" + views + ",\"comments\":" + comments + "}";
+            String data = "{\"code\":0,\"postId\":\"" + post.getId() + "\",\"uid\":\"" + post_uid + "\",\"post_username\":\"" + post_useranme + "\",\"forwards\":\"" + forwards + "\",\"posttime\":\"" + posttime + "\",\"content\":\"" + content + "\",\"likes\":" + likes + ",\"views\":" + views + ",\"comments\":" + comments + "}";
             return new ResponseEntity<>(data, HttpStatus.OK);
         }
         return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
