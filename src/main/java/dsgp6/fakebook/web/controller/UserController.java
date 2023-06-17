@@ -389,6 +389,47 @@ public class UserController {
         });
     }
 
+    @GetMapping("/searchPost")
+    public ResponseEntity<String> searchPost(@RequestParam String keyword, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+        if (userService.checkIdentity(uid, token)) {
+            List<Post> Posts = pRepository.findAll();
+            List<String> posts = new ArrayList<>();
+
+            for(int i = 0;i < Posts.size();i ++) {
+                if(Posts.get(i).getContent().contains(keyword))
+                    posts.add(Posts.get(i).getId());
+            }
+
+            String data = "[";
+
+            for (String postId : posts) {
+                Post post = this.pRepository.getById(postId);
+                post.setViews(post.getViews() + 1);
+                pRepository.save(post);
+                String content = post.getContent().replaceAll("(?<!\\\\)\"", "\\\\\"");
+                int likes = post.getLikes();
+                int views = post.getViews();
+                int comments = post.getCommentsNumber();
+                String post_uid = post.getUid();
+                String post_useranme = userService.getByUid(post.getUid()).getUsername();
+                int forwards = post.getForwards();
+                LocalDateTime postTime = post.getPostTime();
+                String posttime = Auxiliary.formatDateTime(postTime);
+
+                data += "{\"postId\":\"" + postId + "\",\"uid\":\"" + post_uid + "\",\"post_username\":\"" + post_useranme + "\",\"forwards\":\"" + forwards + "\",\"posttime\":\"" + posttime + "\",\"content\":\"" + content + "\",\"likes\":" + likes + ",\"views\":" + views + ",\"comments\":" + comments + "},";
+            }
+
+            if (!posts.isEmpty()) {
+                data = data.substring(0, data.length() - 1);
+            }
+
+            data += "]";
+            return new ResponseEntity<>("{\"code\":0,\"msg\":\"success!\",\"data\":" + data + "}", HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
+    }
+
     @GetMapping("/getPostList")
     public ResponseEntity<String> viewPost(@CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
         if (userService.checkIdentity(uid, token)) {
@@ -467,6 +508,8 @@ public class UserController {
             return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
         }
     }
+
+
 
     @GetMapping("/getPost")
     public ResponseEntity<String> getPost(@RequestParam String postID, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
