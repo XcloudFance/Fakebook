@@ -179,6 +179,7 @@ public class UserService {
     }
 
 
-
-  
+    public void deleteByUid(String userid) {
+        userRepository.deleteByUid(userid);
+    }
 }

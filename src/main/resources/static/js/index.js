@@ -33,12 +33,12 @@ function parseText(text) {
 }
 
 function show_forward(forward_btn) {
-    if(forward_btn.getAttribute("id").endsWith("-ON")) {
+    if (forward_btn.getAttribute("id").endsWith("-ON")) {
         var uid = forward_btn.getAttribute("id").replace("forward_", "");
         uid = uid.substring(0, uid.length - 3);
         document.getElementById("forward_editor_" + uid).remove();
-        forward_btn.setAttribute("id", "forward_"+uid);
-    }else {
+        forward_btn.setAttribute("id", "forward_" + uid);
+    } else {
         var uid = forward_btn.getAttribute("id").replace("forward_", "");
         var forward_editor = document.createElement("div");
         forward_editor.setAttribute("class", "forward_editor");
@@ -125,7 +125,7 @@ function parseQuote(content, uid, username, posttime, views, comments, forwards,
 
 function checkQuote(content, postID) {
     var content = JSON.parse((JSON.parse(content.replaceAll("\"", "\\\"").replace("\\\"content\\\":\\\"", "\"content\":\"").replace("}\\\"", "}\""))["content"]));
-    if(content["quote"].length == 0)
+    if (content["quote"].length == 0)
         return;
     fetch("/api/user/getPost?postID=" + content["quote"][0], {
         method: "GET",
@@ -377,4 +377,20 @@ window.onload = function () {
         // 触发选择文件操作
         input.click();
     }
+    function saveScrollPosition() {
+        var mainContainer = document.querySelector('.main-container');
+        var scrollTop = mainContainer.scrollTop;
+        localStorage.setItem('scrollPosition', scrollTop);
+    }
+
+    function restoreScrollPosition() {
+        var mainContainer = document.querySelector('.main-container');
+        var scrollPosition = localStorage.getItem('scrollPosition');
+        if (scrollPosition !== null) {
+            mainContainer.scrollTop = scrollPosition;
+        }
+    }
+    restoreScrollPosition();
+    window.onscroll = saveScrollPosition;
 }
+

@@ -5,6 +5,7 @@ import dsgp6.fakebook.Utils.FuzzySearch;
 import dsgp6.fakebook.model.Post;
 import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.repository.PRepository;
+import dsgp6.fakebook.repository.UserRepository;
 import dsgp6.fakebook.service.UserService;
 import dsgp6.fakebook.web.forms.RegisterForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,11 @@ public class UserController {
 
     private final UserService userService;
     private final PRepository pRepository;
-    public UserController(UserService userService,PRepository pRepository) {
+    private final UserRepository userRepository;
+    public UserController(UserService userService,PRepository pRepository, UserRepository userRepository) {
         this.userService = userService;
         this.pRepository = pRepository;
+        this.userRepository = userRepository;
     }
     @GetMapping(value = "/avatar/{uid}", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> getAvatar(@PathVariable String uid) {
@@ -645,6 +648,29 @@ public class UserController {
         return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
     }
 
+    @GetMapping("/banUser")
+    public ResponseEntity<String> banUser(@RequestParam("uid") String userid, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+        if(userService.checkIdentity(uid, token)) {
+            if(uid.equals("Admin")) {
+                if(userService.getByUid(userid) != null) {
+                    userService.deleteByUid(userid);
+                    return new ResponseEntity<>("{\"code\":0,\"msg\":\"ok!\"}", HttpStatus.OK);
+                }
+            }
+        }
+        return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Err!\"}", HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/statistic")
+    public ResponseEntity<String> statistic(@CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+        if(userService.checkIdentity(uid, token)) {
+            if(uid.equals("Admin")) {
+                return new ResponseEntity<>("{\"code\":0,\"msg\":\"success\", \"data\":{\"user\": " + userRepository.findAll().size() +",\"posts\":" + pRepository.findAll().size() + "}}", HttpStatus.OK);
+            }
+        }
+        return null;
+    }
+
     @GetMapping("/deletePost/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable String postId, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
     if (userService.checkIdentity(uid, token)) {
@@ -652,7 +678,7 @@ public class UserController {
         if (user != null) {
             // 检查帖子是否存在
             String post = user.getPostById(postId);
-            if (post != null && userService.getByUid(uid).getPosts().contains(postId)) {
+            if (post != null && (userService.getByUid(uid).getPosts().contains(postId) || uid.equals("Admin"))) {
                 user.deletePost(uid);
                 // 从数据库中删除帖子
                 this.pRepository.deleteById(postId);

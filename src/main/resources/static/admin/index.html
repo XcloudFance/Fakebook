@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Page / Fakebook</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 5px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f2f2f2;
+        }
+
+        .error {
+            color: #f44336;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Admin Page</h1>
+    <div id="statisticContainer"></div>
+    <form id="deleteForm" action="">
+        <label for="postID">Delete Post (postID):</label>
+        <input type="text" id="postID" name="postID" placeholder="Enter post ID">
+        <input type="submit" value="Delete Post">
+    </form>
+    <form id="banForm" action="">
+        <label for="uid">Ban User (uid):</label>
+        <input type="text" id="uid" name="uid" placeholder="Enter user ID">
+        <input type="submit" value="Ban User">
+    </form>
+
+    <div id="messageContainer"></div>
+
+    <script>
+        document.getElementById("deleteForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            deletePost();
+        });
+
+        document.getElementById("banForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            banUser();
+        });
+
+        function deletePost() {
+            var postID = document.getElementById("postID").value;
+            if (postID.trim() === "") {
+                displayErrorMessage("Post ID cannot be empty");
+                return;
+            }
+
+            var request = new XMLHttpRequest();
+            request.open("GET", "/api/user/deletePost/" + postID, true);
+            request.onreadystatechange = function () {
+                if (request.readyState === 4) {
+                    if (request.status === 200) {
+                        displaySuccessMessage("Post deleted successfully");
+                    } else {
+                        displayErrorMessage("Failed to delete post");
+                    }
+                }
+            };
+            request.send();
+        }
+
+        function banUser() {
+            var uid = document.getElementById("uid").value;
+            if (uid.trim() === "") {
+                displayErrorMessage("User ID cannot be empty");
+                return;
+            }
+
+            var request = new XMLHttpRequest();
+            request.open("GET", "/api/user/banUser?uid=" + uid, true);
+            request.onreadystatechange = function () {
+                if (request.readyState === 4) {
+                    if (request.status === 200) {
+                        displaySuccessMessage("User banned successfully");
+                    } else {
+                        displayErrorMessage("Failed to ban user");
+                    }
+                }
+            };
+            request.send();
+        }
+
+        function displaySuccessMessage(message) {
+            var messageContainer = document.getElementById("messageContainer");
+            messageContainer.innerHTML = '<div class="message">' + message + '</div>';
+        }
+
+        function displayErrorMessage(message) {
+            var messageContainer = document.getElementById("messageContainer");
+            messageContainer.innerHTML = '<div class="message error">' + message + '</div>';
+        }
+
+        function displayStatistic() {
+            var request = new XMLHttpRequest();
+            request.open("GET", "/api/user/statistic", true);
+            request.onreadystatechange = function () {
+                if (request.readyState === 4) {
+                    if (request.status === 200) {
+                        var response = JSON.parse(request.responseText);
+                        var statisticData = response.data;
+                        var statisticContainer = document.getElementById("statisticContainer");
+                        statisticContainer.innerHTML = "<p>Number of users: " + statisticData.user + "</p><p>Number of posts: " + statisticData.posts + "</p>";
+                    } else {
+                        // Handle error
+                        console.error("Failed to fetch statistic");
+                    }
+                }
+            };
+            request.send();
+        }
+
+        window.onload = function () {
+            displayStatistic();
+        };
+
+
+    </script>
+</body>
+
+</html>
