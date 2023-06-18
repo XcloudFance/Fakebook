@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="./css/index.css">
     <link rel="stylesheet" href="./css/user.css">
-    <script lang="JavaScript" src="./js/index.js"></script>
+    <script lang="JavaScript" src="./js/user.js"></script>
 </head>
 
 <body>
@@ -65,21 +65,54 @@
         <div class="main-container">
             <div class="header-info">
                 <div class="avatar">
-                    <img src="/api/user/avatar/uid">
+                    <img src="/api/user/avatar/uid" id="user-avatar">
                 </div>
                 <div class="header-content">
-                    <h4>Username</h4>
-                    <p>@uid</p>
-                    <p>Email@addr.ess</p>
+                    <h4 id="username_text">Username</h4>
+                    <p id="uid_text">@uid</p>
+                    <p id="email_text">Email</p>
                 </div>
                 <div class="header-opt">
 
                 </div>
             </div>
+            <div class="basic_info">
+                <h4>Basic Information:</h4>
+                <div class="info-iem">
+                    <h5>Gender</h5>
+                    <p id="gender_text">value</p>
+                </div>
+                <div class="info-iem">
+                    <h5>Birthday</h5>
+                    <p id="birthday_text">value</p>
+                </div>
+                <div class="info-iem">
+                    <h5>Phone Number</h5>
+                    <p id="phone_text">value</p>
+                </div>
+                <div class="info-iem">
+                    <h5>Addrress</h5>
+                    <p id="addr_text">value</p>
+                </div>
+                <div class="info-iem">
+                    <h5>Hobbies</h5>
+                    <p id="hobbies_text">value</p>
+                </div>
+                <div class="info-iem">
+                    <h5>Jobs</h5>
+                    <p id="jobs_text">value</p>
+                </div>
+            </div>
+            <div class="posts">
+                <h4>Posts</h4>
+            </div>
+            <div class="post_container" id="post_container">
+                
+            </div>
         </div>
         <div class="right-sidebar">
             <h3 class="comonfriends-topbar">Common Friends</h3>
-            <div class="comonfriends-list">
+            <div class="comonfriends-list" id="common_friends_container">
             </div>
         </div>
     </div>

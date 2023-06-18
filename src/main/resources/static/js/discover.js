@@ -43,7 +43,7 @@ function parseText(text) {
 
     lines.forEach(function (line) {
         if (line.trim() !== '') {
-            var parsedLine = line.trim().replace(/@(\w+)/g, '<a href="/user/$1">@$1</a>');
+            var parsedLine = line.trim().replace(/@(\w+)/g, '<a href="/user?uid=$1">@$1</a>');
             parsedText += '<p>' + parsedLine + '</p>';
         }
     });

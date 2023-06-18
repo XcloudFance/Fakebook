@@ -1,6 +1,7 @@
 package dsgp6.fakebook.service;
 
 import dsgp6.fakebook.Utils.Auxiliary;
+import dsgp6.fakebook.Utils.FuzzySearch;
 import dsgp6.fakebook.Utils.Random;
 import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.repository.UserRepository;
@@ -126,7 +127,7 @@ public class UserService {
         List<User> allUsers = userRepository.findAll();
 
         for (User user : allUsers) {
-            if (user.getUid().contains(keyword)) {
+            if (FuzzySearch.contains(user.getUid(), keyword)) {
                 matchingUsers.add(user);
             }
         }

@@ -1,6 +1,7 @@
 package dsgp6.fakebook.web.controller;
 
 import dsgp6.fakebook.Utils.Auxiliary;
+import dsgp6.fakebook.Utils.FuzzySearch;
 import dsgp6.fakebook.model.Post;
 import dsgp6.fakebook.model.User;
 import dsgp6.fakebook.repository.PRepository;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.resource.ResourceUrlProvider;
@@ -183,7 +185,20 @@ public class UserController {
     }
 
     @GetMapping("/get_profile")
-    public ResponseEntity<String> getProfile(@CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+    public ResponseEntity<String> getProfile(@RequestParam(name = "uid", required = false) String target_uid, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+        if(target_uid != null) {
+            String data = "{";
+            if(userService.getByUid(target_uid) == null)
+                return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Uid Doesn't Exists!\"}", HttpStatus.OK);
+            Map<String, String> profile =  userService.getProfile(target_uid);
+            for (Map.Entry<String, String> entry : profile.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                data += "\"" + key + "\":\"" + value + "\",";
+            }
+            data = data.substring(0, data.length() - 1) + "}";
+            return new ResponseEntity<>("{\"code\":0,\"msg\":\"success!\",\"data\":" + data + "}", HttpStatus.OK);
+        }
         if(userService.checkIdentity(uid, token)) {
             String data = "{";
             Map<String, String> profile =  userService.getProfile(uid);
@@ -239,8 +254,37 @@ public class UserController {
         return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
     }
 
+    @GetMapping("/getCommonFriends")
+    public ResponseEntity<String> getCommonFriends(@RequestParam("uid") String target_uid, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+        if(userService.checkIdentity(uid, token)) {
+            User target = userService.getByUid(target_uid);
+            if(target == null)
+                return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Target UID Doesn't Exist!\"}", HttpStatus.OK);
+            User me = userService.getByUid(uid);
+            List<String> target_friends = target.getFriends();
+            List<String> myFriends = me.getFriends();
+            List<String> CommonFriends = new ArrayList<>();
+            for(int i = 0;i < myFriends.size();i ++)
+                if(target_friends.contains(myFriends.get(i)) && !myFriends.get(i).equals(uid) && !myFriends.get(i).equals(target_uid)) {
+                    CommonFriends.add(myFriends.get(i));
+                }
+            String data = "[";
+            if(CommonFriends.size() == 0)
+                return new ResponseEntity<>("{\"code\":0,\"msg\":\"Success.\",\"data\":[]}", HttpStatus.OK);
+            for(int i = 0;i < CommonFriends.size();i ++) {
+                String friend_uid = CommonFriends.get(i);
+                String username = userService.getByUid(friend_uid).getUsername();
+                data += "{\"uid\":\"" + friend_uid + "\",\"uname\":\"" + username + "\"},";
+            }
+            data = data.substring(0, data.length() - 1);
+            data+="]";
+            return new ResponseEntity<>("{\"code\":0,\"msg\":\"success\",\"data\":" + data + "}", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
+    }
+
     @GetMapping("/deleteFriend")
-    public ResponseEntity<String> deleteFriend(@RequestParam("uid") String friend_uid,@CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+    public ResponseEntity<String> deleteFriend(@RequestParam("uid") String friend_uid, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
         if(userService.checkIdentity(uid, token)) {
             User friend = userService.getByUid(friend_uid);
             if(friend == null)
@@ -411,10 +455,47 @@ public class UserController {
             List<String> posts = new ArrayList<>();
 
             for(int i = 0;i < Posts.size();i ++) {
-                if(Posts.get(i).getContent().contains(keyword))
+                if(FuzzySearch.contains(Posts.get(i).getContent(), keyword))
                     posts.add(Posts.get(i).getId());
             }
 
+            String data = "[";
+
+            for (String postId : posts) {
+                Post post = this.pRepository.getById(postId);
+                post.setViews(post.getViews() + 1);
+                pRepository.save(post);
+                String content = post.getContent().replaceAll("(?<!\\\\)\"", "\\\\\"");
+                int likes = post.getLikes();
+                int views = post.getViews();
+                int comments = post.getCommentsNumber();
+                String post_uid = post.getUid();
+                String post_useranme = userService.getByUid(post.getUid()).getUsername();
+                int forwards = post.getForwards();
+                LocalDateTime postTime = post.getPostTime();
+                String posttime = Auxiliary.formatDateTime(postTime);
+
+                data += "{\"postId\":\"" + postId + "\",\"uid\":\"" + post_uid + "\",\"post_username\":\"" + post_useranme + "\",\"forwards\":\"" + forwards + "\",\"posttime\":\"" + posttime + "\",\"content\":\"" + content + "\",\"likes\":" + likes + ",\"views\":" + views + ",\"comments\":" + comments + "},";
+            }
+
+            if (!posts.isEmpty()) {
+                data = data.substring(0, data.length() - 1);
+            }
+
+            data += "]";
+            return new ResponseEntity<>("{\"code\":0,\"msg\":\"success!\",\"data\":" + data + "}", HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Authentication Failed!\"}", HttpStatus.OK);
+    }
+
+    @GetMapping("/getPosts")
+    public ResponseEntity<String> getPosts(@RequestParam("uid") String target_uid, @CookieValue(name = "uid") String uid, @CookieValue(name = "token") String token) {
+        if (userService.checkIdentity(uid, token)) {
+            User user = userService.getByUid(target_uid);
+            if(user == null)
+                return new ResponseEntity<>("{\"code\":-1,\"msg\":\"Target UID Doesn't Exist!\"}", HttpStatus.OK);
+            List<String> posts = user.getPosts();
             String data = "[";
 
             for (String postId : posts) {

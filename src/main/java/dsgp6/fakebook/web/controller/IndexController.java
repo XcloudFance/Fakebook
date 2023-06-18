@@ -22,9 +22,9 @@ public class IndexController {
         return getIndexContent("static/login/index.html");
     }
 
-    @GetMapping("/user/{uid}")
-    public String getUser(@RequestParam String uid) throws IOException {
-        return getIndexContent("static/user/index.html?uid=" + uid);
+    @GetMapping("/user")
+    public String getUser() throws IOException {
+        return getIndexContent("static/user/index.html");
     }
 
     @GetMapping("/register")

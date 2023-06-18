@@ -5,14 +5,17 @@
     margin-top: 15px;
 }
 
-.avatar {
+.avatar img{
     width: 60px;
     height: 60px;
     border-radius: 50%;
+    margin-top: -15px;
+    padding-top: 0px;
+    vertical-align: top;
 }
 
 .header-content {
-    width: calc(100% - 100px);
+    width: calc(100% - 120px);
     display: inline-block;
 }
 
@@ -25,9 +28,117 @@
 .header-info {
     width: 100%;
     border-bottom: #efefef solid 1px;
+    padding-top: 15px;
 }
 
 .header-opt {
     width: 30px;
     height: 100%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.basic_info {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border-bottom: #efefef solid 1px;
+}
+
+.basic_info h4 {
+    padding-bottom: 10px;
+}
+
+.basic_info h5 {
+    padding: 0px;
+    padding-left: 15px;
+    margin: 0px;
+    color: #333;
+}
+
+.basic_info p {
+    padding: 0px;
+    padding-left: 15px;
+    margin-top: 0px;
+    color: #aaa;
+}
+
+.posts {
+    width: calc(100% - 20px);
+    padding: 10px;
+
+}
+
+.posts h4 {
+    padding-bottom: 10px;
+}
+
+.user-item {
+    width: 100%;
+    height: 80px;
+    border: #efefef solid 1px;
+    border-radius: 10px;
+    margin-top: 5px;
+    transition: all 0.5s ease-out;
+}
+
+.user-item:hover {
+    border: #888 solid 1px;
+    transform: scale(1.01);
+    transition: all 100ms ease-in;
+}
+
+.avatar-container {
+    width: 60px;
+    height: 60px;
+    padding: 10px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    border-radius: 5px;
+}
+
+.user-item-info {
+    vertical-align: top;
+    width: calc(100% - 180px);
+    height: 60px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: inline-block;
+    border-left: #efefef solid 1px;
+}
+
+.user-item-info h4 {
+    padding: 0px;
+    margin-top: 0px;
+    margin-left: 10px;
+}
+
+.user-item-info p {
+    padding: 0px;
+    margin-top: 0px;
+    margin-left: 10px;
+}
+
+.user-item-opt {
+    vertical-align: top;
+    width: 60px;
+    height: 60px;
+    padding: 10px;
+    display: inline-block;
+}
+
+.user-item-opt svg {
+    width: 30px;
+    height: 30px;
+    padding: 15px;
+    fill: #aaa;
+}
+
+.user-item-opt svg:hover {
+    fill: #888;
 }

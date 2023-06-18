@@ -1,3 +1,34 @@
+function getURLParams() {
+    const url = window.location.href;
+    const params = {};
+    const queryString = url.split('?')[1];
+
+    if (queryString) {
+        const keyValuePairs = queryString.split('&');
+
+        keyValuePairs.forEach(keyValue => {
+            const [key, value] = keyValue.split('=');
+            params[key] = decodeURIComponent(value);
+        });
+    }
+
+    return params;
+}
+
+function ApplyFriend(uid) {
+    uid = uid.replaceAll(" ", "");
+    fetch(`/api/user/applyFriend?friend_uid=${uid}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data["code"] === 0) {
+                alert("Applied, waiting for accepting.");
+            } else {
+                alert("Already Friends.");
+            }
+        })
+        .catch(error => console.log(error));
+}
+
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -33,12 +64,12 @@ function parseText(text) {
 }
 
 function show_forward(forward_btn) {
-    if(forward_btn.getAttribute("id").endsWith("-ON")) {
+    if (forward_btn.getAttribute("id").endsWith("-ON")) {
         var uid = forward_btn.getAttribute("id").replace("forward_", "");
         uid = uid.substring(0, uid.length - 3);
         document.getElementById("forward_editor_" + uid).remove();
-        forward_btn.setAttribute("id", "forward_"+uid);
-    }else {
+        forward_btn.setAttribute("id", "forward_" + uid);
+    } else {
         var uid = forward_btn.getAttribute("id").replace("forward_", "");
         var forward_editor = document.createElement("div");
         forward_editor.setAttribute("class", "forward_editor");
@@ -125,7 +156,7 @@ function parseQuote(content, uid, username, posttime, views, comments, forwards,
 
 function checkQuote(content, postID) {
     var content = JSON.parse((JSON.parse(content.replaceAll("\"", "\\\"").replace("\\\"content\\\":\\\"", "\"content\":\"").replace("}\\\"", "}\""))["content"]));
-    if(content["quote"].length == 0)
+    if (content["quote"].length == 0)
         return;
     fetch("/api/user/getPost?postID=" + content["quote"][0], {
         method: "GET",
@@ -223,8 +254,8 @@ function adjustTextareaHeight(textarea) {
     }
 }
 
-function getPosts() {
-    fetch("/api/user/getPostList", {
+function parsePosts(uid) {
+    fetch("/api/user/getPosts?uid=" + uid, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -252,8 +283,8 @@ function getPosts() {
                     var newPost = document.createElement("div");
                     newPost.setAttribute("class", "post_card");
                     newPost.innerHTML = parsed_post;
-                    var post_editor = document.getElementById("post-editor");
-                    insertAfter(newPost, post_editor);
+                    var post_container = document.getElementById("post_container");
+                    post_container.appendChild(newPost);
                     checkQuote(content, postId);
                 }
             } else {
@@ -268,113 +299,51 @@ function getPosts() {
         });
 }
 
+function parseUser(uid) {
+    fetch('./api/user/get_profile?uid=' + uid)
+        .then(response => response.json())
+        .then(data => {
+            if (data.code === 0) {
+                const profileData = data.data;
+                document.getElementById('email_text').innerHTML = profileData.email;
+                document.getElementById('uid_text').innerHTML = "@" + profileData.uid;
+                document.getElementById('username_text').innerHTML = profileData.username;
+                document.getElementById('phone_text').innerHTML = profileData.phone;
+                document.getElementById('addr_text').innerHTML = profileData.address;
+                document.getElementById('jobs_text').innerHTML = profileData.jobs;
+                document.getElementById('hobbies_text').innerHTML = profileData.hobbies;
+                document.getElementById('birthday_text').innerHTML = profileData.birthday;
+                document.getElementById('gender_text').innerHTML = profileData.gender;
+            }
+        })
+        .catch(error => console.log('Error:', error));
+}
+
+
+function parseComonFriends(uid) {
+    fetch(`/api/user/getCommonFriends?uid=${uid}`)
+        .then(response => response.json())
+        .then(data => {
+            var search_result = document.getElementById("common_friends_container");
+            if (data["data"].length == 0 || data["code"] != 0)
+                search_result.innerHTML = `<p style="text-align:center;">No Common Friends found</p>`;
+            else {
+                search_result.innerHTML = "";
+                for (let i = 0; i < data["data"].length; i++) {
+                    var newUseritem = document.createElement("div");
+                    newUseritem.setAttribute("class", "user-item");
+                    newUseritem.innerHTML = `<div class="avatar-container"><img src="/api/user/avatar/` + data["data"][i]["uid"] + `"></div><div class="user-item-info"><h4>` + data["data"][i]["uname"] + `</h4><p>@` + data["data"][i]["uid"] + `</p></div><div class="user-item-opt"><svg onclick="ApplyFriend('${data["data"][i]["uid"]}')" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M864 800h-64v-60.8c0-19.2-12.8-32-32-32s-32 12.8-32 32V800h-64c-19.2 0-32 12.8-32 32s12.8 32 32 32h64v67.2c0 19.2 12.8 32 32 32s32-12.8 32-32V864h64c19.2 0 32-12.8 32-32s-12.8-32-32-32z"></path><path d="M704 931.2V896h-32c-35.2 0-64-28.8-64-64s28.8-64 64-64h32v-28.8c0-25.6 12.8-44.8 32-54.4-22.4-22.4-64-38.4-86.4-48 86.4-51.2 147.2-144 147.2-249.6 0-160-128-288-288-288s-288 128-288 288c0 108.8 60.8 201.6 147.2 249.6-121.6 48-214.4 153.6-240 288-3.2 9.6 0 19.2 6.4 25.6 6.4 6.4 16 12.8 25.6 12.8h553.6c-3.2-9.6-9.6-22.4-9.6-32z"></path></svg></div>`;
+                    search_result.appendChild(newUseritem);
+                }
+            }
+        })
+        .catch(error => console.log(error));
+}
+
 window.onload = function () {
-    var current_imgs = [];
-    var rids = [];
-
-    function uploadImage(img) {
-        var formData = new FormData();
-        formData.append('img', img);
-
-        // 发起POST请求，将图片数据上传到服务器
-        fetch('/api/user/uploadImg', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.text())
-            .then(rid => {
-                // 上传成功后的处理逻辑
-                rids.push(rid);
-                // 这里可以将rid保存到列表或进行其他操作
-            })
-            .catch(error => {
-                // 上传失败的处理逻辑
-                alert('Error uploading image:' + error);
-                location.reload();
-            });
-    }
-
-    var user_avatar = document.getElementById("user-avatar");
-    var user_uid = getCookie("uid");
-    user_avatar.setAttribute("src", "/api/user/avatar/" + user_uid);
-
-    getPosts();
-
-    document.getElementById("post_btn").onclick = function () {
-        var textarea = document.getElementById("post_textarea");
-        textarea.setAttribute("disabled", "disabled");
-        imgs = "\"\"";
-        if (current_imgs.length > 0) {
-            imgs = '"<div class=\'post_album\'>';
-            for (let i = 0; i < current_imgs.length; i++) {
-                imgs += `<img src='/api/user/resource/${rids[i]}'>`;
-            }
-            imgs += "</div>\"";
-        }
-        var content = `{"text":"` + textarea.value + `", "imgs":` + imgs + `, "quote":[]}`;
-        fetch('/api/user/createPost', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                content: content
-            }),
-            credentials: 'same-origin'
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    alert('Error: ' + response.status);
-                }
-            })
-            .then(data => {
-                console.log(data);
-                if (data.code === 0) {
-                    console.log('Post created successfully!');
-                    location.reload();
-                } else {
-                    console.log('Failed to create post:', data.msg);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-
-
-    document.getElementById("addIMG_btn").onclick = function () {
-        var post_headbar = document.getElementById("post_headbar");
-        var input = document.createElement('input');
-        if (current_imgs.length == 4) {
-            alert("Maximum 4 imgs!");
-            return;
-        }
-        input.type = 'file';
-        input.accept = 'image/*';
-
-        // 添加change事件监听器，处理选择文件后的操作
-        input.addEventListener('change', function (event) {
-            var file = event.target.files[0]; // 获取选择的文件
-            var reader = new FileReader();
-
-            reader.onload = function (e) {
-                // 创建新的img元素，并设置其src为选择的图片
-                var img = document.createElement('img');
-                img.src = e.target.result
-                img.setAttribute("class", "preview_img")
-
-                // 将img元素添加到页面中
-                post_headbar.appendChild(img);
-                current_imgs.push(img)
-                uploadImage(file);
-            }
-
-            reader.readAsDataURL(file); // 读取文件内容
-        });
-
-        // 触发选择文件操作
-        input.click();
-    }
+    uid = getURLParams()["uid"];
+    document.getElementById("user-avatar").src = "/api/user/avatar/" + uid;
+    parseUser(uid);
+    parsePosts(uid);
+    parseComonFriends(uid);
 }
