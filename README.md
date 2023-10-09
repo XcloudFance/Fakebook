@@ -1,5 +1,5 @@
 # Fakebook
-A Facebook-like web project
+A Facebook-like web project with beautiful css animations.
 
 ## Preview:
 ![](https://github.com/XcloudFance/Fakebook/blob/main/FakebookScreenshots/Snipaste_2023-10-09_16-20-05.png)
